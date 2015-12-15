@@ -1,0 +1,59 @@
+.table-component {
+    border: 1px solid $table-head-background
+    width: 100%
+
+    .table-head {
+
+        .table-row {
+            background: $table-head-background
+            color: $table-head-text
+        }
+    }
+
+    .table-body {
+        height: calc(100% - 42px)
+        overflow-y: auto
+        width: 100%
+    }
+
+    .table-row {
+        background: $table-row-background
+
+        &.even {
+            background-color: $table-row-even-background
+        }
+
+        &.is-empty {
+            text-align: center
+        }
+
+        .table-header, .table-data {
+            inline-block()
+            border-left: 1px solid $table-data-border
+            height: 42px
+            line-height: 26px
+            padding: 8px
+
+            &:first-child {
+                border-left: none
+            }
+
+            &.row-number, &.select-all {
+                text-align: center
+            }
+        }
+
+        .table-data {
+            ellipsis()
+
+            .table-data-icon {
+                no-select()
+                color: $table-data-icon
+                cursor: pointer
+                display: inline-block
+                width: 28px
+                text-align: center
+            }
+        }
+    }
+}

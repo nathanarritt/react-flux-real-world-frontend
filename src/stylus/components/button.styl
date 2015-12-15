@@ -1,0 +1,136 @@
+.button {
+    border: 1px solid transparent
+    border-radius: 5px
+    color: $button-text
+    cursor: pointer
+    display: inline-block
+    font-size: 1.6rem
+    height: 29px
+    line-height: 27px
+    max-width: 480px
+    padding: 0 16px
+    text-align: center
+    white-space: nowrap
+
+    &:focus {
+        outline: none
+            /* &:hover, &:focus, &.active {
+                background: $button-hover-background;
+                border-color: $button-hover-border;
+        
+                &.disabled {
+                    background: $button-hover-background;
+                }
+            } */
+    }
+
+    &.primary {
+        background: $button-primary-background
+        color: $button-primary-text
+
+        &:hover, &:focus, &.active {
+            background: $button-primary-background
+
+            &.disabled {
+                background: $button-primary-background
+            }
+        }
+    }
+
+    &.delete {
+        background: $button-delete-background
+        color: $button-delete-text
+
+        &:hover, &:focus, &.active {
+            background: $button-delete-background
+
+            &.disabled {
+                background: $button-delete-background
+            }
+        }
+    }
+
+    &.small {
+        font-size: 1.3rem
+        height: 28px
+        line-height: 26px
+    }
+
+    &.big {
+        font-size: 1.6rem
+        height: 32px
+        line-height: 30px
+        max-width: none
+        width: 100%
+    }
+
+    &.disabled {
+        border-color: $button-disabled-border
+        cursor: default
+        opacity: 0.6
+    }
+
+    & + & {
+        margin-left: 8px
+    }
+
+    &.hidden {
+        display: none
+    }
+}
+
+.button-wrapper {
+    border-radius: 3px
+    display: inline-block
+    height: 29px
+    line-height: 29px
+    position: relative
+
+    &.small {
+        height: 20px
+        line-height: 20px
+    }
+
+    &.big {
+        height: 32px
+        line-height: 32px
+    }
+
+    & + & {
+        margin-left: 8px
+    }
+
+    &.hidden {
+        display: none
+    }
+}
+
+.button-progress-bar {
+    background: rgba(255, 255, 255, 0.5)
+    display: none
+    height: 100%
+    left: 0
+    position: absolute
+    text-align: center
+    top: 0
+    width: 100%
+}
+
+.button-progress-bar-throbber {
+    vertical-align: middle
+}
+
+// Icon Button
+.icon-button {
+    @extend .button
+    padding: 0
+    text-align: center
+    width: 28px
+}
+
+.icon-button-icon {
+    color: $button-icon
+    display: inline-block
+    font-size: 1.2rem
+    width: 12px
+}

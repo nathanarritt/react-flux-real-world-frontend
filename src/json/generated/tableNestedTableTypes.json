@@ -1,0 +1,18 @@
+{
+  "ANY": {
+    "name": "ANY",
+    "val": "-1"
+  },
+  "NONE": {
+    "name": "NONE",
+    "val": "-2"
+  },
+  "TABLE_NESTED_TABLE_TYPE_ONE": {
+    "name": "TABLE_NESTED_TABLE_TYPE_ONE",
+    "val": "0X00000001"
+  },
+  "TABLE_NESTED_TABLE_TYPE_TWO": {
+    "name": "TABLE_NESTED_TABLE_TYPE_TWO",
+    "val": "0X00000002"
+  }
+}

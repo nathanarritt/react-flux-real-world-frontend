@@ -1,0 +1,281 @@
+{
+  "basicTable": [
+    {
+      "id": 1,
+      "name": "Basic Table Item 1",
+      "description": "Basic Table Item 1 description"
+    },
+    {
+      "id": 2,
+      "name": "Basic Table Item 2",
+      "description": "Basic Table Item 2 description"
+    },
+    {
+      "id": 3,
+      "name": "Basic Table Item 3",
+      "description": "Basic Table Item 3 description"
+    },
+    {
+      "id": 4,
+      "name": "Basic Table Item 4",
+      "description": "Basic Table Item 4 description"
+    },
+    {
+      "id": 5,
+      "name": "Basic Table Item 5",
+      "description": "Basic Table Item 5 description"
+    },
+    {
+      "id": 6,
+      "name": "Basic Table Item 6",
+      "description": "Basic Table Item 6 description"
+    },
+    {
+      "id": 7,
+      "name": "Basic Table Item 7",
+      "description": "Basic Table Item 7 description"
+    }
+  ],
+  "datacenters": [
+    {
+      "id": 597,
+      "name": "smca-demo",
+      "provider": "demo",
+      "country": "INDIA",
+      "city": "bangalore",
+      "timezone": "INDIA_ASIA_KOLKATA",
+      "latitude": 12,
+      "longitude": 12,
+      "uploadBandwidth": 3,
+      "downloadBandwidth": 2
+    },
+    {
+      "id": 610,
+      "name": "Datacenter-Test",
+      "provider": "Provider-0-Test",
+      "country": "UNITED_STATES",
+      "city": "City-0-Test",
+      "timezone": "UNITED_STATES_AMERICA_LOS_ANGELES",
+      "latitude": -76,
+      "longitude": -49,
+      "uploadBandwidth": 5832,
+      "downloadBandwidth": 323665
+    },
+    {
+      "id": 638,
+      "name": "naDataCenter01",
+      "provider": "naProvider",
+      "country": "UNITED_STATES",
+      "city": "San Jose",
+      "timezone": "UNITED_STATES_AMERICA_LOS_ANGELES",
+      "latitude": 11,
+      "longitude": -111,
+      "uploadBandwidth": 3000000,
+      "downloadBandwidth": 1000000
+    }
+  ],
+  "tableTabsToggle": [
+    {
+      "id": 4098,
+      "type": "ZSCMCLT",
+      "name": "Table/Tabs Toggle 1",
+      "servicePort": 0,
+      "thing": "THING_ONE"
+    },
+    {
+      "id": 4117,
+      "type": "SMLB",
+      "name": "Table/Tabs Toggle 2",
+      "serviceIps": [
+        "10.66.16.20"
+      ],
+      "servicePort": 9422,
+      "node": {
+        "id": 604,
+        "name": "smca1"
+      },
+      "thing": "THING_ONE"
+    },
+    {
+      "id": 4118,
+      "type": "SME",
+      "name": "Table/Tabs Toggle 3",
+      "serviceIps": [
+        "10.66.16.20"
+      ],
+      "servicePort": 9422,
+      "node": {
+        "id": 604,
+        "name": "smca1"
+      },
+      "thing": "THING_ONE"
+    },
+    {
+      "id": 4122,
+      "type": "SMLB",
+      "name": "Table/Tabs Toggle 4",
+      "serviceIps": [
+        "10.66.16.20"
+      ],
+      "servicePort": 9422,
+      "node": {
+        "id": 642,
+        "name": "naNodeSme01"
+      },
+      "thing": "THING_ONE"
+    },
+    {
+      "id": 4123,
+      "type": "SME",
+      "name": "Table/Tabs Toggle 5",
+      "serviceIps": [
+        "10.66.16.20"
+      ],
+      "servicePort": 9422,
+      "node": {
+        "id": 642,
+        "name": "naNodeSme01"
+      },
+      "thing": "THING_ONE"
+    }
+  ],
+  "tableToolbarModal": [
+    {
+      "id": 2,
+      "name": "Table/Toolbar/Modal 1",
+      "description": null,
+      "thing": "THING_ONE",
+      "datacenters": [
+        {
+          "id": 638,
+          "name": "naDataCenter01"
+        }
+      ]
+    }
+  ],
+  "session": {
+    "authType": "ADMIN_LOGIN"
+  },
+  "subclouds": [
+    {
+      "id": 4121,
+      "name": "naSubcloud01",
+      "description": null,
+      "thing": "THING_ONE",
+      "clusters": [
+        {
+          "id": 4119,
+          "name": "naZenCluster01"
+        }
+      ],
+      "datacenters": null,
+      "organization": {
+        "id": 65541,
+        "name": "zscm.net"
+      },
+      "failOpen": true
+    },
+    {
+      "id": 4125,
+      "name": "naSubcloud02",
+      "description": "naSubcloud02 description",
+      "thing": "THING_ONE",
+      "clusters": [
+        {
+          "id": 4124,
+          "name": "naZenCluster02"
+        }
+      ],
+      "datacenters": null,
+      "organization": {
+        "id": 65541,
+        "name": "zscm.net"
+      },
+      "failOpen": true
+    }
+  ],
+  "tableNestedTable": [
+    {
+      "id": 4119,
+      "name": "Table/Nested Table 1",
+      "description": "Table/Nested Table 1 description",
+      "type": "TABLE_NESTED_TABLE_TYPE_ONE",
+      "greUsage": true,
+      "pacUsage": true,
+      "smikeUsage": false,
+      "subnet": "1.1.1.0/24",
+      "virtualIps": [
+        {
+          "id": 646,
+          "name": "1.1.1.1"
+        }
+      ],
+      "smLbInstances": [
+        {
+          "id": 4117,
+          "name": "naSmlb01"
+        }
+      ],
+      "smeInstances": [
+        {
+          "id": 4118,
+          "name": "naSme01"
+        }
+      ],
+      "rebalanceDistributionEnabled": false,
+      "sublocationLbEnabled": false,
+      "smikeHealthMonitoringEnabled": false,
+      "authLocationLbEnabled": false,
+      "vipMonitoringDisabled": false,
+      "locationLookupDisabled": false,
+      "internalIpSwitchingOnGreDisabled": false,
+      "thing": "THING_ONE",
+      "disabled": false,
+      "datacenter": {
+        "id": 638,
+        "name": "naDataCenter01"
+      }
+    },
+    {
+      "id": 4124,
+      "name": "Table/Nested Table 2",
+      "description": "Table/Nested Table 2 description",
+      "type": "TABLE_NESTED_TABLE_TYPE_ONE",
+      "greUsage": true,
+      "pacUsage": true,
+      "smikeUsage": false,
+      "subnet": "1.1.1.0/24",
+      "virtualIps": [
+        {
+          "id": 647,
+          "name": "1.1.1.2"
+        }
+      ],
+      "smLbInstances": [
+        {
+          "id": 4122,
+          "name": "naInstanceSmlb02"
+        }
+      ],
+      "smeInstances": [
+        {
+          "id": 4123,
+          "name": "naInstanceSme02"
+        }
+      ],
+      "rebalanceDistributionEnabled": false,
+      "sublocationLbEnabled": false,
+      "smikeHealthMonitoringEnabled": false,
+      "authLocationLbEnabled": false,
+      "vipMonitoringDisabled": false,
+      "locationLookupDisabled": false,
+      "internalIpSwitchingOnGreDisabled": false,
+      "thing": "THING_ONE",
+      "disabled": false,
+      "datacenter": {
+        "id": 638,
+        "name": "naDataCenter01"
+      }
+    }
+  ]
+}

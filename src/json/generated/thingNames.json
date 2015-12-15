@@ -1,0 +1,38 @@
+{
+  "ANY": {
+    "name": "ANY",
+    "val": "-1"
+  },
+  "NONE": {
+    "name": "NONE",
+    "val": "-2"
+  },
+  "THING_ONE": {
+    "name": "THING_ONE",
+    "val": "0X00"
+  },
+  "THING_TWO": {
+    "name": "THING_TWO",
+    "val": "0X01"
+  },
+  "THING_THREE": {
+    "name": "THING_THREE",
+    "val": "0X02"
+  },
+  "THING_FOUR": {
+    "name": "THING_FOUR",
+    "val": "0X03"
+  },
+  "THING_FIVE": {
+    "name": "THING_FIVE",
+    "val": "0X04"
+  },
+  "THING_SIX": {
+    "name": "THING_SIX",
+    "val": "0X05"
+  },
+  "THING_SEVEN": {
+    "name": "THING_SEVEN",
+    "val": "0X06"
+  }
+}

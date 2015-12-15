@@ -1,0 +1,29 @@
+
+/* Prevent text overflow */
+ellipsis() {
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+}
+
+/* Display as inline-block */
+inline-block($vertical-align = top) {
+    display: inline-block
+    vertical-align: $vertical-align
+}
+
+/* Prevent text selection highlighting */
+no-select() {
+    -webkit-touch-callout: none
+    -webkit-user-select: none
+    -khtml-user-select: none
+    -moz-user-select: none
+    -ms-user-select: none
+    user-select: none
+}
+
+unstyled-list() {
+    margin: 0
+    padding: 0
+    list-style: none
+}

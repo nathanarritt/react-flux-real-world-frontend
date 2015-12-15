@@ -1,0 +1,480 @@
+input-field() {
+    background: $form-text-input-background
+    border: 1px solid $form-text-input-border
+    color: $form-text-input-text
+    height: 27px
+    line-height: 25px
+    padding: 0 8px
+    width: 100%
+}
+
+textarea-field() {
+    background: $form-text-input-background
+    border: 1px solid $form-text-input-border
+    height: 90px
+    padding: 8px
+    width: 100%
+}
+
+.checkbox-component {
+    no-select()
+    cursor: pointer
+    line-height: 32px
+
+    &.with-padding {
+        padding: 0 16px
+    }
+
+    .checkbox-field {
+        inline-block()
+        background: $checkbox-field-background
+        border: 1px solid $checkbox-field-border
+        color: $checkbox-field-text
+        height: 16px
+        margin: 8px 8px 0 0
+        width: 16px
+
+        i {
+            vertical-align: top
+        }
+    }
+
+    .checkbox-label {
+        inline-block()
+    }
+}
+
+.drop-down-component {
+    position: relative
+
+    &.is-expanded {
+        z-index: 1
+    }
+
+    .drop-down-value {
+        no-select()
+        ellipsis()
+        input-field()
+        cursor: pointer
+        padding-right: 20px
+
+        .no-value {
+            color: $form-placeholder-text
+        }
+
+        .drop-down-value-icon {
+            line-height: 25px
+            position: absolute
+            right: 8px
+        }
+    }
+
+    .drop-down-list {
+        unstyled-list()
+        background: $drop-down-list-background
+        border: 1px solid $drop-down-list-border
+        color: $drop-down-list-text
+        left: 0
+        max-height: 200px
+        overflow-y: auto
+        overflow-x: hidden
+        position: absolute
+        top: 26px
+        width: 280px
+
+        .drop-down-list-item {
+            ellipsis()
+            cursor: pointer
+            line-height: 25px
+            padding: 0 8px
+
+            &:hover, &.selected {
+                background: $drop-down-list-item-hover-background
+                color: $drop-down-list-item-hover-text
+            }
+        }
+
+        .drop-down-list-item-empty {
+            line-height: 25px
+            padding: 0 8px
+            text-align: center
+        }
+
+        .drop-down-list-item-loader {
+            height: 142px
+            width: 280px
+        }
+    }
+}
+
+.form-input-text {
+    input-field()
+}
+
+.form-label {
+    color: $form-section-column-label
+    display: block
+    font-weight: bold
+    margin-bottom: 6px
+}
+
+.form-textarea {
+    textarea-field()
+}
+
+.form-component {
+
+    .form-heading {
+        color: $form-section-heading-text
+        font-weight: bold
+        line-height: 28px
+        margin-bottom: 4px
+
+        &.toggle {
+            cursor: pointer
+
+            &.is-collapsed {
+                background: $form-section-background
+                color: $form-toggle-section-heading-text
+                line-height: normal
+                padding: 16px
+            }
+
+            .form-heading-toggle-icon {
+                margin-right: 6px
+            }
+        }
+    }
+
+    .form-section {
+        background: $form-section-background
+        padding: 16px
+        margin-bottom: 20px
+
+        &:last-child {
+            margin-bottom: 12px
+        }
+
+        .form-row {
+            inline-block()
+            margin-bottom: 22px
+            width: 100%
+
+            &:last-child {
+                margin-bottom: 0
+            }
+
+            .form-column {
+
+                &.left {
+                    float: left
+                    padding-right: 16px
+                    width: 50%
+                }
+
+                &.right {
+                    float: right
+                    padding-left: 16px
+                    width: 50%
+                }
+
+                .form-column-item {
+
+                    &:not(:first-child) {
+                        margin-top: 14px
+                    }
+
+                    label {
+                        @extend .form-label
+                    }
+
+                    input[type="text"] {
+                        input-field()
+
+                        // read-only is for system data, not user input data
+                        &.read-only {
+                            background: transparent
+                            border: none
+                            color: $form-text-input-readonly-text
+                            font-size: 15px
+                            padding-left: 0
+                        }
+                    }
+
+                    textarea {
+                        textarea-field()
+                    }
+
+                    .checkbox-component {
+                        line-height: 27px
+
+                        .checkbox-field {
+                            margin-top: 6px
+                        }
+                    }
+
+                    .form-checkbox-group {
+                        .checkbox-component {
+                            inline-block()
+                            margin-right: 25px
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .form-toggle-section {
+        margin-bottom: 20px
+
+        &:last-child {
+            margin-bottom: 12px
+        }
+    }
+}
+
+.multi-select-component {
+    position: relative
+
+    &.is-expanded {
+        z-index: 1
+
+        .multi-select-value {
+            border: 1px solid $multi-select-header-background
+
+            .multi-select-value-icon {
+                color: $multi-select-header-background
+            }
+        }
+    }
+
+    .multi-select-value {
+        no-select()
+        ellipsis()
+        input-field()
+        cursor: pointer
+        padding-right: 20px
+
+        .no-value {
+            color: $form-placeholder-text
+        }
+
+        .multi-select-value-icon {
+            line-height: 25px
+            position: absolute
+            right: 8px
+        }
+    }
+
+    .multi-select-list {
+        left: 0
+        max-height: 200px
+        position: absolute
+        top: 26px
+        width: 600px
+
+        &.left {
+            left: auto
+            right: 0
+        }
+
+        .multi-select-list-footer {
+            background: $multi-select-footer-background
+            border-radius: 0 0 5px 5px
+            border: 1px solid $multi-select-footer-border
+            border-top: 1px solid $multi-select-footer-border-top
+            padding: 12px 16px
+        }
+
+        .multi-select-list-header {
+            background: $multi-select-header-background
+            color: $multi-select-header-text
+            padding: 12px 16px
+
+            &.left-radius {
+                border-radius: 5px 0 0 0
+            }
+
+            &.right {
+                border-left: 1px solid $multi-select-header-border
+            }
+
+            &.right-radius {
+                border-radius: 0 5px 0 0
+            }
+        }
+
+        .multi-select-list-options {
+            overflow: hidden
+        }
+
+        .multi-select-list-search {
+            background: $multi-select-footer-background
+            padding: 12px 16px
+
+            &.left {
+                border-left: 1px solid $multi-select-footer-border
+            }
+
+            &.right {
+                border-right: 1px solid $multi-select-footer-border
+                border-left: 1px solid $multi-select-footer-border-top
+            }
+        }
+
+        .multi-select-list-selected, .multi-select-list-unselected {
+            float: left
+            width: 50%
+        }
+
+        .multi-select-list-selected-options, .multi-select-list-unselected-options {
+            unstyled-list()
+            background: $multi-select-list-background
+            color: $multi-select-list-text
+            height: 142px
+            overflow-y: auto
+        }
+
+        .multi-select-list-selected-options {
+            border-left: 1px solid $multi-select-footer-border-top
+            border-right: 1px solid $multi-select-footer-border
+        }
+
+        .multi-select-list-unselected-options {
+            border-left: 1px solid $multi-select-footer-border
+            position: relative
+        }
+
+        .multi-select-list-item {
+            ellipsis()
+            no-select()
+            cursor: pointer
+            line-height: 25px
+
+            &:hover {
+                background: $drop-down-list-item-hover-background
+                color: $drop-down-list-item-hover-text
+            }
+
+            &.category {
+                background: $multi-select-list-children-background
+                color: $multi-select-list-children-text
+
+                    .multi-select-list-item-children {
+                        background: $multi-select-list-background
+                        color: $multi-select-list-text
+                        margin-left: -40px
+
+                        .multi-select-list-item .checkbox-component {
+                            padding-left: 40px
+                        }
+                    }
+
+                &:hover {
+                    background: $multi-select-list-children-hover-background
+                    color: $multi-select-list-children-hover-text
+                }
+            }
+        }
+
+        .multi-select-list-item-loader {
+            height: 142px
+        }
+
+        .multi-select-list-item-empty {
+            line-height: 25px
+            text-align: center
+        }
+    }
+}
+
+.radio-button-component {
+    inline-block()
+    no-select()
+    background: $radio-button-background
+    border: 1px solid $radio-button-border
+    border-radius: 5px
+    color: $radio-button-text
+    cursor: pointer
+    height: 27px
+    line-height: 25px
+
+    .radio-button-item {
+        inline-block()
+        border-left: 1px solid $radio-button-border
+        padding: 0 20px
+
+        &:hover:not(.selected) {
+            background: $radio-button-hover-background
+
+            &.first {
+                border-radius: 5px 0 0 5px
+            }
+
+            &.last {
+                border-radius: 0 5px 5px 0
+            }
+        }
+
+        &.first {
+            border-left: none
+        }
+
+        &.selected {
+            background: $radio-button-selected-background
+            color: $radio-button-selected-text
+            padding: 0 12px
+
+            i {
+                font-size: 1.4rem
+                margin-right: 4px
+            }
+        }
+    }
+}
+
+.toggle-button-component {
+    no-select()
+    border-radius: 5px
+    cursor: pointer
+    font-size: 1.6rem
+    height: 27px
+    overflow: hidden
+    padding: 5px
+    width: 62px
+
+    &.off {
+        background: $toggle-button-off-background
+
+        .toggle-button-switch {
+            float: left
+        }
+
+        .toggle-button-icon {
+            float: right
+            font-size: 1.7rem
+            margin-top: -1px
+        }
+    }
+
+    &.on {
+        background: $toggle-button-on-background
+    }
+
+    .toggle-button-switch {
+        background: $toggle-button-switch-background
+        border-radius: 5px
+        float: right
+        height: 17px
+        width: 20px
+    }
+
+    .toggle-button-icon {
+        color: $toggle-button-icon-text
+        float: left
+        line-height: 17px
+        opacity: 0.8
+        text-align: center
+        width: 28px
+    }
+}

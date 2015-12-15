@@ -1,0 +1,34 @@
+link-base($text-size = inherit, $icon-size = 1.6rem) {
+    no-select()
+    color: $toolbar-item-link
+    font-size: $text-size
+
+    &:hover {
+        cursor: pointer
+    }
+
+    i {
+        font-size: $icon-size
+        margin-right: 5px
+    }
+}
+
+.toolbar-component {
+    margin-bottom: 20px
+
+    .toolbar-item {
+        display: inline-block
+
+        &:not(:first-child) {
+            margin-left: 20px
+        }
+
+        &.link {
+            link-base()
+        }
+
+        &.back-link {
+            link-base(1.1rem, 1.1rem)
+        }
+    }
+}

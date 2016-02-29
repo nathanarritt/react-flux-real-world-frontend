@@ -6,6 +6,15 @@ ellipsis() {
     white-space: nowrap
 }
 
+font-family-default() {
+    font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
+}
+
+font-family-light() {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
+    font-weight: 300
+}
+
 /* Display as inline-block */
 inline-block($vertical-align = top) {
     display: inline-block
@@ -26,4 +35,10 @@ unstyled-list() {
     margin: 0
     padding: 0
     list-style: none
+}
+
+circle($size = 15px) {
+    border-radius: 50%
+    height: $size
+    width: $size
 }

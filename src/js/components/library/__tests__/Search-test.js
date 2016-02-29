@@ -18,7 +18,7 @@ describe('Search', () => {
 
         // Render a error in the document
         const search = TestUtils.renderIntoDocument(
-            <Search action={simulateClick} />
+            <Search onAction={simulateClick} />
         );
 
         const input = TestUtils.findRenderedDOMComponentWithTag(search, 'input');
@@ -38,7 +38,7 @@ describe('Search', () => {
 
         // Render a error in the document
         const search = TestUtils.renderIntoDocument(
-            <Search action={simulateKeyUp} />
+            <Search onAction={simulateKeyUp} />
         );
 
         const input = TestUtils.findRenderedDOMComponentWithTag(search, 'input');
@@ -57,7 +57,7 @@ describe('Search', () => {
 
         // Render a error in the document
         const search = TestUtils.renderIntoDocument(
-            <Search action={simulateKeyUp} allowKeyUp={true} />
+            <Search onAction={simulateKeyUp} allowKeyUp={true} />
         );
 
         const input = TestUtils.findRenderedDOMComponentWithTag(search, 'input');
@@ -73,7 +73,7 @@ describe('Search', () => {
 
         // Render a error in the document
         const search = TestUtils.renderIntoDocument(
-            <Search action={simulateClick} />
+            <Search onAction={simulateClick} />
         );
 
         const input = TestUtils.findRenderedDOMComponentWithTag(search, 'input');
@@ -89,7 +89,7 @@ describe('Search', () => {
 
         // Render a error in the document
         const search = TestUtils.renderIntoDocument(
-            <Search action={simulateClick} placeholder={placeholder} />
+            <Search onAction={simulateClick} placeholder={placeholder} />
         );
 
         const input = TestUtils.findRenderedDOMComponentWithTag(search, 'input');

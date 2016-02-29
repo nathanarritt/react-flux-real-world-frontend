@@ -39,7 +39,7 @@ function serialize(value) {
 
 function isLocalStorageSupported() {
     try {
-        return ('localStorage' in window && window.localStorage);
+        return 'localStorage' in window && window.localStorage;
     } catch (error) {
         return false;
     }
@@ -57,7 +57,7 @@ if (isLocalStorageSupported()) {
     storage.forEach = callback => {
         for (let i = 0; i < nativeStorage.length; i++) {
             const key = nativeStorage.key(i);
-            callback(key, storage.get(key));
+            callback(key, storage.get(key)); // eslint-disable-line callback-return
         }
     };
 

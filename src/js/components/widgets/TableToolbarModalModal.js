@@ -76,7 +76,7 @@ export default class TableToolbarModalModal extends Component {
                 hasError
             });
         } else {
-            this.props.handleSave(fieldValues);
+            this.props.onSave(fieldValues);
         }
     }
 
@@ -147,26 +147,29 @@ export default class TableToolbarModalModal extends Component {
             defaultAction: this.handleFieldValue
         };
 
-        const {handleClose, isLoading, title} = this.props;
+        const {onClose, isLoading, title} = this.props;
 
         return (
             <Modal
                 disableSave={hasError}
-                handleClose={handleClose}
-                handleSave={this.handleSave}
                 isLoading={isLoading}
-                title={title}>
-
-                <Form config={formConfig} data={fieldValues} />
+                onClose={onClose}
+                onSave={this.handleSave}
+                title={title}
+            >
+                <Form
+                    config={formConfig}
+                    data={fieldValues}
+                />
             </Modal>
         );
     }
 }
 
 TableToolbarModalModal.propTypes = {
-    data: PropTypes.object.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    handleSave: PropTypes.func.isRequired,
+    data: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
     isLoading: PropTypes.bool,
+    onClose: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired
 };

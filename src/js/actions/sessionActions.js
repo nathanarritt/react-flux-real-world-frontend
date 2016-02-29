@@ -18,7 +18,7 @@ export function getAuthenticatedStatus(callback) {
             authenticatedStatus(response.data);
 
             if (typeof callback === 'function') {
-                callback(response);
+                callback(response); // eslint-disable-line callback-return
             }
         })
         .catch(response => {
@@ -67,9 +67,7 @@ export function login(data) {
         });
 */
 
-    sendRequest('put', apiResource, {
-            authType: 'ADMIN_LOGIN'
-        })
+    sendRequest('put', apiResource, {authType: 'ADMIN_LOGIN'})
         .then(response => {
             loginSuccess(response.data, data.username);
         })
@@ -94,11 +92,9 @@ export function logout() {
         });
 */
 
-    sendRequest('put', apiResource, {
-            authType: null
-        })
+    sendRequest('put', apiResource, {authType: null})
         .then(response => {
-            console.log('apiUtils auth logout successful', response);
+            console.log('apiUtils auth logout successful', response); // eslint-disable-line no-console
         })
         .catch(response => {
             processErrorResponse(apiResource, response);

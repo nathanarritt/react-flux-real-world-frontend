@@ -1,227 +1,336 @@
 import React, {Component, PropTypes} from 'react';
 
+import {formatMessage} from '../../../utils/localizationUtils';
+
 import Checkbox from './Checkbox';
 import DropDown from './DropDown';
-import {formatMessage} from '../../../utils/localizationUtils';
+import ListBuilder from './ListBuilder';
 import MultiSelect from './MultiSelect';
 import RadioButtons from './RadioButtons';
 import ToggleButton from './ToggleButton';
 
-function handleCheckboxAction(action, attribute, value) {
-    action({attribute, value: !value});
-}
+class Field extends Component {
 
-function handleInputData(value) {
-    let output = value;
-    if (Array.isArray(value) && (value.length > 0)) {
-        output = value.map((val)=> {
-            return typeof val === 'string' ? val : val.name;
-        }).join(', ');
-    } else if (value !== null && typeof value === 'object') {
-        output = value.name;
+    static propTypes = {
+        column: PropTypes.shape({
+            action: PropTypes.func,
+            allowSelectAll: PropTypes.bool,
+            attribute: PropTypes.string,
+            autoFocus: PropTypes.bool,
+            element: PropTypes.string,
+            error: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.array
+            ]),
+            label: PropTypes.string,
+            placeholder: PropTypes.string
+        }),
+        columnType: PropTypes.string,
+        data: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+        defaultAction: PropTypes.func,
+        fieldId: PropTypes.string
+    };
+
+    constructor() {
+        super();
+        this.handleCheckboxAction = this.handleCheckboxAction.bind(this);
+        this.getInputValue = this.getInputValue.bind(this);
+        this.handleTextInput = this.handleTextInput.bind(this);
     }
 
-    return output;
-}
+    getInputValue() {
+        const {column: {attribute, overrideValue}, data} = this.props;
 
-// Normalize input and textarea with the same action value as custom components.
-function handleTextInput(action, attribute, event) {
-    action({attribute, value: event.target.value});
-}
+        let value = data[attribute];
 
-function getField(fieldConfig) {
-    const {column, columnType, data, defaultAction, fieldId} = fieldConfig;
-
-    const {
-        action, allowSelectAll, attribute, autofocus, element, label, placeholder
-    } = column;
-
-    if (element === 'checkbox') {
-        return (
-            <Checkbox action={handleCheckboxAction.bind(
-                          null, action || defaultAction, attribute, data[attribute]
-                      )}
-                      isChecked={data[attribute]}
-                      label={formatMessage(label)} />
-        );
-    } else if (element === 'checkboxGroup') {
-        const checkboxGroup = column.checkboxGroup;
-
-        const checkboxes = checkboxGroup.map((checkbox, index) => {
-            return (
-                <Checkbox action={handleCheckboxAction.bind(
-                              null, action || defaultAction, checkbox.attribute,
-                              data[checkbox.attribute]
-                          )}
-                          isChecked={data[checkbox.attribute]}
-                          key={index}
-                          label={formatMessage(checkbox.label)} />
-            );
-        });
-
-        return (
-            <div className="form-checkbox-group">
-                {checkboxes}
-            </div>
-        );
-    } else if (element === 'dropDown') {
-        const {list, listSource} = column;
-
-        return (
-            <DropDown
-                action={action || defaultAction}
-                attribute={attribute}
-                list={list}
-                listSource={listSource}
-                placeholder={placeholder}
-                value={data[attribute]} />
-        );
-    } else if (element === 'readOnly') {
-        return (
-            <input
-                className="read-only"
-                disabled="true"
-                id={fieldId}
-                name={attribute}
-                type="text"
-                value={handleInputData(data[attribute])} />
-        );
-    } else if (element === 'input') {
-        const type = column.type || 'text';
-
-        return (
-            <input
-                autoFocus={autofocus}
-                id={fieldId}
-                name={attribute}
-                onChange={handleTextInput.bind(null, action || defaultAction, attribute)}
-                placeholder={formatMessage(placeholder)}
-                type={type}
-                value={data[attribute]} />
-        );
-    } else if (element === 'multiSelect') {
-        const {groupBy, list, listSource} = column;
-
-        return (
-            <MultiSelect
-                action={action || defaultAction}
-                allowSelectAll={allowSelectAll}
-                attribute={attribute}
-                expandDirection={columnType === 'right' ? 'left' : 'right'}
-                groupBy={groupBy}
-                list={list}
-                listSource={listSource}
-                placeholder={placeholder}
-                value={data[attribute]} />
-        );
-    } else if (element === 'radioButtons') {
-        const options = column.options;
-
-        return (
-            <RadioButtons
-                action={action || defaultAction}
-                attribute={attribute}
-                options={options}
-                value={data[attribute]} />
-        );
-    } else if (element === 'textarea') {
-        let textareaValue = data[attribute];
-
-        if (Array.isArray(textareaValue)) {
-            textareaValue = textareaValue.join('\n');
+        if (overrideValue) {
+            value = formatMessage(overrideValue);
+        } else if (Array.isArray(value) && value.length > 0) {
+            value = value.map(val => {
+                return typeof val === 'string' ? val : val.name;
+            }).join(', ');
+        } else if (value !== null && typeof value === 'object') {
+            value = value.name;
         }
 
-        return (
-            <textarea
-                id={fieldId}
-                name={attribute}
-                onChange={handleTextInput.bind(null, action || defaultAction, attribute)}
-                placeholder={formatMessage(placeholder)}
-                value={textareaValue} />
-        );
-    } else if (element === 'toggleButton') {
-        return (
-            <ToggleButton
-                action={action || defaultAction}
-                attribute={attribute}
-                value={data[attribute]} />
-        );
+        return value;
     }
 
-    return null;
+    handleCheckboxAction(event) {
+        const {
+            column: {action, attribute, checkboxGroup, element},
+            data,
+            defaultAction
+        } = this.props;
+
+        const onAction = action || defaultAction;
+
+        let actionAttribute = attribute;
+
+        if (element === 'checkboxGroup') {
+            const index = event.currentTarget.getAttribute('data-checkbox-id');
+            actionAttribute = checkboxGroup[index].attribute;
+        }
+
+        const value = data[actionAttribute];
+
+        onAction({attribute: actionAttribute, value: !value});
+    }
+
+    // Normalize input and textarea with the same action value as custom components.
+    handleTextInput(event) {
+        const {column: {action, attribute}, defaultAction} = this.props;
+        const onAction = action || defaultAction;
+
+        onAction({attribute, value: event.target.value});
+    }
+
+    render() {
+        const {column, columnType, data, defaultAction, fieldId} = this.props;
+
+        const {
+            action, allowSelectAll, attribute, autoFocus, element, error, label,
+            placeholder
+        } = column;
+
+        if (element === 'checkbox') {
+            return (
+                <Checkbox
+                    isChecked={data[attribute]}
+                    label={formatMessage(label)}
+                    onAction={this.handleCheckboxAction}
+                />
+            );
+        } else if (element === 'checkboxGroup') {
+            const checkboxGroup = column.checkboxGroup;
+
+            const checkboxes = checkboxGroup.map((checkbox, index) => {
+                return (
+                    <Checkbox
+                        checkboxId={index}
+                        isChecked={data[checkbox.attribute]}
+                        key={index}
+                        label={formatMessage(checkbox.label)}
+                        onAction={this.handleCheckboxAction}
+                    />
+                );
+            });
+
+            return (
+                <div className="form-checkbox-group">
+                    {checkboxes}
+                </div>
+            );
+        } else if (element === 'dropDown') {
+            const {list, listSource} = column;
+
+            return (
+                <DropDown
+                    action={action || defaultAction}
+                    attribute={attribute}
+                    error={error}
+                    list={list}
+                    listSource={listSource}
+                    placeholder={placeholder}
+                    value={data[attribute]}
+                />
+            );
+        } else if (element === 'input') {
+            const type = column.type || 'text';
+
+            return (
+                <div className={`form-column-item-field ${element} ${error ? 'has-error' : ''}`}>
+                    <input
+                        autoFocus={autoFocus}
+                        className="form-column-item-input"
+                        id={fieldId}
+                        name={attribute}
+                        onChange={this.handleTextInput}
+                        placeholder={formatMessage(placeholder)}
+                        type={type}
+                        value={data[attribute]}
+                    />
+                    {error &&
+                        <div className="form-column-item-error-icon">
+                            <i className="fa fa-times-circle" />
+                        </div>
+                    }
+                    {error &&
+                        <div className="form-column-item-error-message">
+                            {error}
+                        </div>
+                    }
+                </div>
+            );
+        } else if (element === 'listBuilder') {
+            const {addButtonText, removeItemsText} = column;
+
+            return (
+                <ListBuilder
+                    action={action || defaultAction}
+                    addButtonText={addButtonText}
+                    attribute={attribute}
+                    error={error}
+                    id={fieldId}
+                    placeholder={placeholder}
+                    removeItemsText={removeItemsText}
+                    value={data[attribute]}
+                />
+            );
+        } else if (element === 'multiSelect') {
+            const {groupBy, list, listSource} = column;
+
+            return (
+                <MultiSelect
+                    action={action || defaultAction}
+                    allowSelectAll={allowSelectAll}
+                    attribute={attribute}
+                    error={error}
+                    expandDirection={columnType === 'right' ? 'left' : 'right'}
+                    groupBy={groupBy}
+                    list={list}
+                    listSource={listSource}
+                    placeholder={placeholder}
+                    value={data[attribute]}
+                />
+            );
+        } else if (element === 'radioButtons') {
+            const options = column.options;
+
+            return (
+                <RadioButtons
+                    action={action || defaultAction}
+                    attribute={attribute}
+                    options={options}
+                    value={data[attribute]}
+                />
+            );
+        } else if (element === 'readOnly') {
+            return (
+                <input
+                    className="form-column-item-input read-only"
+                    disabled="true"
+                    id={fieldId}
+                    name={attribute}
+                    type="text"
+                    value={this.getInputValue()}
+                />
+            );
+        } else if (element === 'textarea') {
+            let textareaValue = data[attribute];
+
+            if (Array.isArray(textareaValue)) {
+                textareaValue = textareaValue.join('\n');
+            }
+
+            return (
+                <div className={`form-column-item-field ${element} ${error ? 'has-error' : ''}`}>
+                    <textarea
+                        className="form-column-item-textarea"
+                        id={fieldId}
+                        name={attribute}
+                        onChange={this.handleTextInput}
+                        placeholder={formatMessage(placeholder)}
+                        value={textareaValue}
+                    />
+                    {error &&
+                        <div className="form-column-item-error-icon">
+                            <i className="fa fa-times-circle" />
+                        </div>
+                    }
+                    {error &&
+                        <div className="form-column-item-error-message">
+                            {error}
+                        </div>
+                    }
+                </div>
+            );
+        } else if (element === 'toggleButton') {
+            return (
+                <ToggleButton
+                    action={action || defaultAction}
+                    attribute={attribute}
+                    error={error}
+                    value={data[attribute]}
+                />
+            );
+        }
+
+        return null;
+    }
 }
 
 function getFieldId(attribute, element) {
-    if (attribute && /input|textarea/.test(element)) {
+    if (attribute && /input|textarea|listBuilder/.test(element)) {
         return `form-component-${element}-${attribute}`;
     }
 
     return null;
 }
 
-function getRowColumnItems(rowColumnItemsConfig) {
-    const {column, columnType, data, defaultAction} = rowColumnItemsConfig;
-
-    if (Array.isArray(column)) {
-        return column.map((item, itemIndex) => {
-            const {attribute, element, error, label} = item; // eslint-disable-line no-shadow
-            const fieldId = getFieldId(attribute, element); // eslint-disable-line no-shadow
-
-            return (
-                <div className="form-column-item" key={itemIndex}>
-                    <label htmlFor={fieldId}>
-                        {formatMessage(label)}
-                        {error &&
-                            <div className="form-column-item-error">
-                                <i className="fa fa-times-circle" />
-                                <span className="error-message">{error}</span>
-                            </div>
-                        }
-                    </label>
-                    <div className={`form-column-item-field ${element} ${error ? 'has-error' : ''}`}>
-                        {getField({
-                            column: item,
-                            columnType,
-                            data,
-                            defaultAction,
-                            fieldId
-                        })}
-                    </div>
-                </div>
-            );
-        });
-    }
-
-    const {attribute, element, error, label} = column;
+function RowColumnItem({column, columnType, data, defaultAction}) {
+    const {attribute, element, label} = column;
     const fieldId = getFieldId(attribute, element);
 
     return (
         <div className="form-column-item">
             <label htmlFor={fieldId}>
                 {formatMessage(label)}
-                {error &&
-                    <div className="form-column-item-error">
-                        <i className="fa fa-times-circle" />
-                        <span className="error-message">{error}</span>
-                    </div>
-                }
             </label>
-            <div className={`form-column-item-field ${element} ${error ? 'has-error' : ''}`}>
-                {getField({
-                    column,
-                    columnType,
-                    data,
-                    defaultAction,
-                    fieldId
-                })}
-            </div>
+            <Field
+                column={column}
+                columnType={columnType}
+                data={data}
+                defaultAction={defaultAction}
+                fieldId={fieldId}
+            />
         </div>
     );
 }
 
-function getRowColumns(rowColumnsConfig) {
-    const {data, defaultAction, row} = rowColumnsConfig;
+RowColumnItem.propTypes = {
+    column: PropTypes.object,  // eslint-disable-line react/forbid-prop-types
+    columnType: PropTypes.string,
+    data: PropTypes.object,  // eslint-disable-line react/forbid-prop-types
+    defaultAction: PropTypes.func
+};
 
+function getRowColumnItems({column, columnType, data, defaultAction}) {
+    if (Array.isArray(column)) {
+        return column.map((item, itemIndex) => {
+            return (
+                <RowColumnItem
+                    column={item}
+                    columnType={columnType}
+                    data={data}
+                    defaultAction={defaultAction}
+                    key={itemIndex}
+                />
+            );
+        });
+    }
+
+    return (
+        <RowColumnItem
+            column={column}
+            columnType={columnType}
+            data={data}
+            defaultAction={defaultAction}
+        />
+    );
+}
+
+getRowColumnItems.propTypes = {
+    column: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.object
+    ]),
+    columnType: PropTypes.string,
+    data: PropTypes.object,  // eslint-disable-line react/forbid-prop-types
+    defaultAction: PropTypes.func
+};
+
+function getRowColumns({data, defaultAction, row}) {
     return row.map((column, columnIndex) => {
         let columnType = column.forceDirection || '';
 
@@ -234,8 +343,11 @@ function getRowColumns(rowColumnsConfig) {
         }
 
         return (
-            <div className={`form-column ${columnType}`} key={columnIndex}>
-                {getRowColumnItems({
+            <div
+                className={`form-column ${columnType}`}
+                key={columnIndex}
+            >
+                {getRowColumnItems.call(this, {
                     column,
                     columnType,
                     data,
@@ -246,13 +358,14 @@ function getRowColumns(rowColumnsConfig) {
     });
 }
 
-function getRows(rowsConfig) {
-    const {config, data, defaultAction} = rowsConfig;
-
+function getRows({config, data, defaultAction}) {
     return config.map((row, rowIndex) => {
         return (
-            <div className="form-row" key={rowIndex}>
-                {getRowColumns({
+            <div
+                className="form-row"
+                key={rowIndex}
+            >
+                {getRowColumns.call(this, {
                     data,
                     defaultAction,
                     row
@@ -262,12 +375,13 @@ function getRows(rowsConfig) {
     });
 }
 
-function getSection(sectionConfig) {
-    const {config, data, defaultAction, sectionKey} = sectionConfig;
-
+function getSection({config, data, defaultAction, sectionKey}) {
     return (
-        <div className="form-section" key={sectionKey}>
-            {getRows({
+        <div
+            className="form-section"
+            key={sectionKey}
+        >
+            {getRows.call(this, {
                 config,
                 data,
                 defaultAction
@@ -276,21 +390,57 @@ function getSection(sectionConfig) {
     );
 }
 
-function getToggleSection(sectionConfig) {
-    const {config, data, defaultAction, label, sectionKey} = sectionConfig;
+class ToggleSectionHeading extends Component {
 
-    const isExpanded = this.state.toggleSections[sectionKey];
+    static propTypes = {
+        isExpanded: PropTypes.bool.isRequired,
+        label: PropTypes.string.isRequired,
+        onAction: PropTypes.func.isRequired,
+        sectionKey: PropTypes.number.isRequired
+    };
+
+    constructor() {
+        super();
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick() {
+        const {onAction, sectionKey} = this.props;
+        onAction(sectionKey);
+    }
+
+    render() {
+        const {isExpanded, label} = this.props;
+
+        return (
+            <div
+                className={`form-heading toggle ${isExpanded ? 'is-expanded' : 'is-collapsed'}`}
+                key={0}
+                onClick={this.handleClick}
+            >
+                <i className={`fa fa-caret-${isExpanded ? 'down' : 'right'} form-heading-toggle-icon`} />
+                {formatMessage(label)}
+            </div>
+        );
+    }
+}
+
+function getToggleSection({config, data, defaultAction, label, sectionKey}) {
+    const isExpanded = !!this.state.toggleSections[sectionKey];
 
     return (
-        <div className="form-toggle-section" key={sectionKey}>
-            <div className={`form-heading toggle ${isExpanded ? 'is-expanded' : 'is-collapsed'}`}
-                 key={0}
-                 onClick={this.handleToggleSection.bind(this, sectionKey)}>
-                 <i className={`fa fa-caret-${isExpanded ? 'down' : 'right'} form-heading-toggle-icon`} />
-                 {formatMessage(label)}
-            </div>
+        <div
+            className="form-toggle-section"
+            key={sectionKey}
+        >
+            <ToggleSectionHeading
+                isExpanded={isExpanded}
+                label={label}
+                onAction={this.handleToggleSection}
+                sectionKey={sectionKey}
+            />
             {isExpanded &&
-                getSection({
+                getSection.call(this, {
                     config,
                     data,
                     defaultAction,
@@ -325,7 +475,7 @@ function getToggleSection(sectionConfig) {
  *         defaultAction if this property is missing
  *       - allowSelectAll {boolean} Enable Select All functionality for multiSelect
  *       - attribute {string} Model attribute
- *       - autofocus {boolean} Set to true for input or textarea element if
+ *       - autoFocus {boolean} Set to true for input or textarea element if
  *         this item should be auto focused
  *       - element {string} Form element type:
  *         checkbox, checkboxGroup, dropDown, input, multiSelect,
@@ -362,7 +512,7 @@ function getToggleSection(sectionConfig) {
  *                     // left column with a single form field (this is common use case)
  *                     {
  *                         attribute: 'name',
- *                         autofocus: true,
+ *                         autoFocus: true,
  *                         element: 'input',
  *                         forceDirection: 'left',
  *                         label: 'NAME',
@@ -373,22 +523,22 @@ function getToggleSection(sectionConfig) {
  *                     // two form fields in the same column container (uncommon use case)
  *                     [
  *                         {
- *                             action: this.setDataCentersValue.bind(this),
+ *                             action: this.setDataCentersValue,
  *                             allowSelectAll: true,
  *                             attribute: 'datacenters',
  *                             element: 'multiSelect',
  *                             label: 'DATA_CENTERS',
  *                             list: this.state.dataCenters,
- *                             listSource: this.getDataCenters.bind(this),
+ *                             listSource: this.getDataCenters,
  *                             placeholder: 'CHOOSE_DATA_CENTERS'
  *                         },
  *                         {
- *                             action: this.setTimeZoneValue.bind(this),
+ *                             action: this.setTimeZoneValue,
  *                             attribute: 'timezone',
  *                             element: 'dropDown',
  *                             label: 'TIME_ZONE',
  *                             list: this.state.timeZones,
- *                             listSource: this.getTimeZones.bind(this),
+ *                             listSource: this.getTimeZones,
  *                             placeholder: 'CHOOSE_TIME_ZONE'
  *                         }
  *                     ]
@@ -396,16 +546,26 @@ function getToggleSection(sectionConfig) {
  *             ]
  *         }
  *     ],
- *     defaultAction: this.handleChange.bind(this)
+ *     defaultAction: this.handleChange
  * };
  *
  */
 export default class Form extends Component {
+
+    static propTypes = {
+        config: PropTypes.shape({
+            defaultAction: PropTypes.func,
+            elements: PropTypes.array
+        }).isRequired,
+        data: PropTypes.object.isRequired // eslint-disable-line react/forbid-prop-types
+    };
+
     constructor() {
         super();
         this.state = {
             toggleSections: {}
         };
+        this.handleToggleSection = this.handleToggleSection.bind(this);
     }
 
     handleToggleSection(sectionKey) {
@@ -420,12 +580,6 @@ export default class Form extends Component {
         this.setState({
             toggleSections
         });
-
-        const forceUpdate = this.props.config.forceUpdate;
-
-        if (typeof forceUpdate === 'function') {
-            forceUpdate();
-        }
     }
 
     render() {
@@ -434,14 +588,17 @@ export default class Form extends Component {
         const content = config.elements.map((element, index) => {
             if (element.type === 'heading') {
                 return (
-                    <div className="form-heading" key={index}>
+                    <div
+                        className="form-heading"
+                        key={index}
+                    >
                         {formatMessage(element.label)}
                     </div>
                 );
             }
 
             if (element.type === 'section') {
-                return getSection({
+                return getSection.call(this, {
                     config: element.rows,
                     data,
                     defaultAction: config.defaultAction,
@@ -458,6 +615,8 @@ export default class Form extends Component {
                     sectionKey: index
                 });
             }
+
+            return null;
         });
 
         return (
@@ -467,8 +626,3 @@ export default class Form extends Component {
         );
     }
 }
-
-Form.propTypes = {
-    config: PropTypes.object.isRequired,
-    data: PropTypes.object.isRequired
-};

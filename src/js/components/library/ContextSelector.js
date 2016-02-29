@@ -4,6 +4,44 @@ import ReactDom from 'react-dom';
 
 import {formatMessage} from '../../utils/localizationUtils';
 
+class DropDownItem extends Component {
+
+    static propTypes = {
+        className: PropTypes.string,
+        item: PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ]),
+            name: PropTypes.string
+        }).isRequired,
+        onAction: PropTypes.func.isRequired
+    };
+
+    constructor() {
+        super();
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick() {
+        const {onAction, item} = this.props;
+        onAction(item);
+    }
+
+    render() {
+        const {className, item} = this.props;
+
+        return (
+            <li
+                className={className}
+                onClick={this.handleClick}
+            >
+                {item.name}
+            </li>
+        );
+    }
+}
+
 function getDropDownItemsElements() {
     const selectedItem = this.state.selectedItem;
     const {allowRepeat, list} = this.props;
@@ -12,9 +50,12 @@ function getDropDownItemsElements() {
         const className = !allowRepeat && item.id === selectedItem.id ? 'selected' : null;
 
         return (
-            <li className={className} key={index} onClick={this.handleClick.bind(this, item)}>
-                {item.name}
-            </li>
+            <DropDownItem
+                className={className}
+                item={item}
+                key={index}
+                onAction={this.handleClick}
+            />
         );
     });
 }
@@ -32,23 +73,46 @@ function getSelectedItem(list, selectedId) {
     });
 }
 
-function getSelectedItemElement() {
-    const {isExpanded, selectedItem} = this.state;
-    const defaultText = this.props.defaultText;
+class SelectedItem extends Component {
 
-    if (!selectedItem) {
-        return null;
+    static propTypes = {
+        defaultText: PropTypes.string,
+        isExpanded: PropTypes.bool.isRequired,
+        onAction: PropTypes.func.isRequired,
+        selectedItem: PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ]),
+            name: PropTypes.string
+        }).isRequired
+    };
+
+    constructor() {
+        super();
+        this.handleClick = this.handleClick.bind(this);
     }
 
-    return (
-        <div className={`context-selector-selected ${isExpanded ? 'is-expanded' : ''}`}
-             onClick={this.handleClick.bind(this, selectedItem, !!defaultText)}>
-            <span className="context-selector-selected-item">
-                {defaultText ? formatMessage(defaultText) : selectedItem.name}
-            </span>
-            <i className={`fa fa-caret-${isExpanded ? 'up' : 'down'} context-selector-selected-icon`} />
-        </div>
-    );
+    handleClick() {
+        const {defaultText, onAction, selectedItem} = this.props;
+        onAction(selectedItem, !!defaultText);
+    }
+
+    render() {
+        const {defaultText, isExpanded, selectedItem} = this.props;
+
+        return (
+            <div
+                className={`context-selector-selected ${isExpanded ? 'is-expanded' : ''}`}
+                onClick={this.handleClick}
+            >
+                <span className="context-selector-selected-item">
+                    {defaultText ? formatMessage(defaultText) : selectedItem.name}
+                </span>
+                <i className={`fa fa-caret-${isExpanded ? 'up' : 'down'} context-selector-selected-icon`} />
+            </div>
+        );
+    }
 }
 
 /**
@@ -56,9 +120,9 @@ function getSelectedItemElement() {
  *
  * @class ContextSelector
  *
- * The following props are supported:
+ * @classdesc The following props are supported:
  *
- * action {function} Processes the selected data.
+ * onAction {function} Processes the selected data.
  * allowRepeat {boolean} Don't highlight the selected item and execute the
  *     action for each click on the same item.
  * defaultText {string} Localization key to use as SelectedItemElement text
@@ -70,6 +134,22 @@ function getSelectedItemElement() {
  *
  */
 export default class ContextSelector extends Component {
+
+    static propTypes = {
+        allowRepeat: PropTypes.bool,
+        defaultText: PropTypes.string,
+        list: PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ]),
+            name: PropTypes.string
+        })).isRequired,
+        listSource: PropTypes.func,
+        onAction: PropTypes.func.isRequired,
+        selectedId: PropTypes.string
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -77,6 +157,7 @@ export default class ContextSelector extends Component {
             selectedItem: getSelectedItem(props.list, props.selectedId)
         };
         this.handleDocumentClick = this.handleDocumentClick.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     componentDidMount() {
@@ -100,13 +181,13 @@ export default class ContextSelector extends Component {
     }
 
     handleClick(newSelectedItem, skipAction) {
-        const allowRepeat = this.props.allowRepeat;
+        const {onAction, allowRepeat} = this.props;
 
         if (this.state.isExpanded &&
             !(typeof skipAction === 'boolean' && skipAction) &&
             (allowRepeat || newSelectedItem.id !== this.state.selectedItem.id)) {
 
-            this.props.action(newSelectedItem);
+            onAction(newSelectedItem);
 
             this.setState({
                 selectedItem: newSelectedItem
@@ -131,11 +212,16 @@ export default class ContextSelector extends Component {
     }
 
     render() {
-        const isExpanded = this.state.isExpanded;
+        const {isExpanded, selectedItem} = this.state;
 
         return (
             <div className="context-selector-component">
-                {getSelectedItemElement.call(this)}
+                <SelectedItem
+                    defaultText={this.props.defaultText}
+                    isExpanded={isExpanded}
+                    onAction={this.handleClick}
+                    selectedItem={selectedItem}
+                />
                 {isExpanded &&
                     <ul className="context-selector-options">
                         {getDropDownItemsElements.call(this)}
@@ -145,12 +231,3 @@ export default class ContextSelector extends Component {
         );
     }
 }
-
-ContextSelector.propTypes = {
-    action: PropTypes.func.isRequired,
-    allowRepeat: PropTypes.bool,
-    defaultText: PropTypes.string,
-    list: PropTypes.array.isRequired,
-    listSource: PropTypes.func,
-    selectedId: PropTypes.string
-};

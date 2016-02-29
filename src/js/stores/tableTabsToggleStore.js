@@ -11,7 +11,7 @@ import {getStringValue, localizeValue} from '../utils/localizationUtils';
 import {deleteModel, parseCollection, parseModel, sortCollection, updateModel} from '../utils/storeUtils';
 
 const parseOptions = {
-    localizeAttributes: ['thing', /*'systemFeatureBits', 'systemFeatureParams',*/ 'type']
+    localizeAttributes: ['thing', 'type']
 };
 
 let store = Map({
@@ -208,7 +208,7 @@ class TableTabsToggleStore extends Store {
                     this.emitChange();
                     break;
 
-                case actionTypes.TABLE_TABS_TOGGLE_SET_SELECTED_INSTANCE:
+                case actionTypes.TABLE_TABS_TOGGLE_SET_SELECTED_INSTANCE: {
                     const selectedInstanceData = store.getIn(
                         ['selectedInstance', 'data']
                     );
@@ -226,6 +226,7 @@ class TableTabsToggleStore extends Store {
 
                     this.emitChange();
                     break;
+                }
 
                 case actionTypes.TABLE_TABS_TOGGLE_UPDATE_SUCCESS:
                     store = store.merge({

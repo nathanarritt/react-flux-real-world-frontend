@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import ReactDom from 'react-dom';
 
-import componentsConfig from '../../config/componentsConfig';
+import styleConfig from '../../config/styleConfig';
 import Loader from './Loader';
 import {formatMessage} from '../../utils/localizationUtils';
 
@@ -14,7 +14,10 @@ function getTabHeaders() {
 
         if (type === 'component') {
             return (
-                <li className={`tabs-header-item ${type}`} key={index}>
+                <li
+                    className={`tabs-header-item ${type}`}
+                    key={index}
+                >
                     {tab.component}
                 </li>
             );
@@ -23,9 +26,10 @@ function getTabHeaders() {
         return (
             <li
                 className={`tabs-header-item ${type} ${index === selectedTabIndex ? 'selected' : ''}`}
+                data-tab-id={index}
                 key={index}
-                onClick={this.setSelectedTabIndex.bind(this, index)}>
-
+                onClick={this.handleSelectedTabIndex}
+            >
                 {tab.icon && <i className={tab.icon} />}
                 {formatMessage(tab.label)}
             </li>
@@ -40,37 +44,83 @@ function getTabHeaders() {
  *
  * The following props are supported:
  *
- * config {array} (required) The config is an array of objects used for the
- *     toolbar layout and functionality.
+ * config {object} (required) The config objects is used for the tabs layout.
  * isLoading {boolean} The isLoading state from the view where state is managed.
  * withToolbar {boolean} Used to calculate the tabs height in setTabsHeight().
  *
  * The config objects support the following attributes:
- *     - action {function} (required) A method bound to the parent view where state is managed that handles
- *                                    the action corresponding to the `type` of element selected.
- *     - icon {string} The class name(s) to use for the icon element.
- *     - label {string} Localization key or text.
- *     - type {string} (required) The type of toolbar item: link
+ *     - tabs {array} (required) Array of objects describing each tab. The
+ *         following attributes are supported for each tab:
+ *
+ *         component {element} React component to display instead of a label.
+ *         content {element} React component to display when the tab is clicked.
+ *         icon {string} Icon class names to use.
+ *         label {string} Text to display in tab.
+ *         type {string} The type of tab item: component, link
  *
  * @example <caption>Example usage:</caption>
  *
- * const toolbarConfig = [
- *     {
- *         action: this.handleActionOpen.bind(this),
- *         icon: 'fa fa-plus-circle',
- *         label: 'ADD_NEW_NODE',
- *         type: 'link'
- *     }
- * ];
+ * const tabsConfig = {
+ *     tabs: [
+ *         {
+ *             label: 'SERVER_CONFIGURATION',
+ *             content: (
+ *                 <InstancesForm
+ *                     data={data}
+ *                     handleClose={onClose}
+ *                     handleSave={onSave}
+ *                 />
+ *             )
+ *         },
+ *         {
+ *             label: 'COMMENTS',
+ *             content: <div>Comments Content</div>
+ *         },
+ *         {
+ *             label: 'REVISION',
+ *             content: <div>Revision Content</div>,
+ *             icon: 'fa fa-history',
+ *             type: 'link'
+ *         },
+ *         {
+ *             component: (
+ *                 <ContextSelector
+ *                     action={handleExternalLink}
+ *                     allowRepeat
+ *                     defaultText="EXTERNAL_LINKS"
+ *                     list={getExternalLinksList()}
+ *                 />
+ *             ),
+ *             type: 'component'
+ *         }
+ *     ]
+ * };
  *
  */
 export default class Tabs extends Component {
+
+    static propTypes = {
+        config: PropTypes.shape({
+            tabs: PropTypes.arrayOf(PropTypes.shape({
+                component: PropTypes.element,
+                content: PropTypes.element,
+                icon: PropTypes.string,
+                label: PropTypes.string,
+                type: PropTypes.string
+            })).isRequired
+        }).isRequired,
+        defaultTabIndex: PropTypes.number,
+        isLoading: PropTypes.bool,
+        withToolbar: PropTypes.bool
+    };
+
     constructor(props) {
         super(props);
         this.state = {
             selectedTabIndex: props.defaultTabIndex || 0,
             tabsHeight: 'auto'
         };
+        this.handleSelectedTabIndex = this.handleSelectedTabIndex.bind(this);
     }
 
     componentDidMount() {
@@ -81,7 +131,10 @@ export default class Tabs extends Component {
         this.setTabsHeight();
     }
 
-    setSelectedTabIndex(selectedTabIndex) {
+    handleSelectedTabIndex(event) {
+        const selectedTabIndex = parseInt(
+            event.currentTarget.getAttribute('data-tab-id'), 10
+        );
         this.setState({selectedTabIndex});
     }
 
@@ -92,7 +145,7 @@ export default class Tabs extends Component {
 
         const withToolbar = this.props.withToolbar;
 
-        const toolbarHeight = componentsConfig.toolbar.height;
+        const toolbarHeight = styleConfig.toolbar.height;
 
         let newTabsHeight;
 
@@ -126,11 +179,17 @@ export default class Tabs extends Component {
         const {config, isLoading} = this.props;
 
         return (
-            <div className="tabs-component" style={{height: this.state.tabsHeight}}>
+            <div
+                className="tabs-component"
+                style={{height: this.state.tabsHeight}}
+            >
                 <nav className="tabs-header">
                     <ul>{getTabHeaders.call(this)}</ul>
                 </nav>
-                <div className="tabs-body" ref="tabsBody">
+                <div
+                    className="tabs-body"
+                    ref={c => (this.tabsBody = c)}
+                >
                     {config.tabs[selectedTabIndex].content}
                 </div>
                 {isLoading && <Loader />}
@@ -138,9 +197,3 @@ export default class Tabs extends Component {
         );
     }
 }
-
-Tabs.propTypes = {
-    config: PropTypes.object.isRequired,
-    isLoading: PropTypes.bool,
-    withToolbar: PropTypes.bool
-};

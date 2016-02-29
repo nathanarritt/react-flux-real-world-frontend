@@ -47,7 +47,15 @@
       "latitude": 12,
       "longitude": 12,
       "uploadBandwidth": 3,
-      "downloadBandwidth": 2
+      "downloadBandwidth": 2,
+      "flags": 0,
+      "versionNumber": 0,
+      "createTime": 1447659180,
+      "lastModifiedTime": 1447659180,
+      "lastModifiedUser": {
+        "id": 65544,
+        "name": "admin@example.net"
+      }
     },
     {
       "id": 610,
@@ -59,7 +67,15 @@
       "latitude": -76,
       "longitude": -49,
       "uploadBandwidth": 5832,
-      "downloadBandwidth": 323665
+      "downloadBandwidth": 323665,
+      "flags": 0,
+      "versionNumber": 0,
+      "createTime": 1447890580,
+      "lastModifiedTime": 1447890580,
+      "lastModifiedUser": {
+        "id": 65544,
+        "name": "admin@example.net"
+      }
     },
     {
       "id": 638,
@@ -71,7 +87,15 @@
       "latitude": 11,
       "longitude": -111,
       "uploadBandwidth": 3000000,
-      "downloadBandwidth": 1000000
+      "downloadBandwidth": 1000000,
+      "flags": 0,
+      "versionNumber": 0,
+      "createTime": 1448307404,
+      "lastModifiedTime": 1448307404,
+      "lastModifiedUser": {
+        "id": 65544,
+        "name": "admin@example.net"
+      }
     }
   ],
   "tableTabsToggle": [
@@ -150,7 +174,14 @@
           "id": 638,
           "name": "naDataCenter01"
         }
-      ]
+      ],
+      "versionNumber": 0,
+      "createTime": 1448307532,
+      "lastModifiedTime": 1448307532,
+      "lastModifiedUser": {
+        "id": 65544,
+        "name": "admin@zscm.net"
+      }
     }
   ],
   "session": {
@@ -173,7 +204,10 @@
         "id": 65541,
         "name": "zscm.net"
       },
-      "failOpen": true
+      "failOpen": true,
+      "createTime": 0,
+      "lastModifiedTime": 0,
+      "lastModifiedUser": null
     },
     {
       "id": 4125,
@@ -191,7 +225,10 @@
         "id": 65541,
         "name": "zscm.net"
       },
-      "failOpen": true
+      "failOpen": true,
+      "createTime": 0,
+      "lastModifiedTime": 0,
+      "lastModifiedUser": null
     }
   ],
   "tableNestedTable": [
@@ -229,6 +266,8 @@
       "vipMonitoringDisabled": false,
       "locationLookupDisabled": false,
       "internalIpSwitchingOnGreDisabled": false,
+      "createTime": 0,
+      "lastModifiedTime": 0,
       "thing": "THING_ONE",
       "disabled": false,
       "datacenter": {
@@ -270,6 +309,8 @@
       "vipMonitoringDisabled": false,
       "locationLookupDisabled": false,
       "internalIpSwitchingOnGreDisabled": false,
+      "createTime": 0,
+      "lastModifiedTime": 0,
       "thing": "THING_ONE",
       "disabled": false,
       "datacenter": {

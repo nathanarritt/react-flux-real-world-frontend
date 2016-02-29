@@ -4,6 +4,14 @@ import ReactDom from 'react-dom';
 import {formatMessage} from '../../utils/localizationUtils';
 
 export default class Error extends Component {
+
+    static propTypes = {
+        response: PropTypes.shape({
+            code: PropTypes.string,
+            message: PropTypes.string
+        }).isRequired
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -21,8 +29,8 @@ export default class Error extends Component {
 
     setMarginTop() {
         const componentHeight = ReactDom.findDOMNode(this).offsetHeight;
-        const contentHeight = this.refs.errorContent.offsetHeight;
-        const marginTop = ((componentHeight - contentHeight) / 2);
+        const contentHeight = this.errorContent.offsetHeight;
+        const marginTop = (componentHeight - contentHeight) / 2;
 
         this.setState({
             marginTop
@@ -36,9 +44,9 @@ export default class Error extends Component {
             <div className="error-component">
                 <div
                     className="error-content"
-                    ref="errorContent"
-                    style={{marginTop: this.state.marginTop}}>
-
+                    ref={c => (this.errorContent = c)}
+                    style={{marginTop: this.state.marginTop}}
+                >
                     <div className="error-header">
                         {formatMessage(code)}
                     </div>
@@ -48,8 +56,8 @@ export default class Error extends Component {
                             {formatMessage('PLEASE_TRY_AGAIN')}
                             <span
                                 className="error-refresh"
-                                onClick={this.handleReload.bind(this)}>
-
+                                onClick={this.handleReload}
+                            >
                                 {formatMessage('REFRESH')}
                             </span>
                         </p>
@@ -59,7 +67,3 @@ export default class Error extends Component {
         );
     }
 }
-
-Error.propTypes = {
-    response: PropTypes.object.isRequired
-};

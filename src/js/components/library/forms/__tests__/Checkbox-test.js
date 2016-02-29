@@ -1,11 +1,11 @@
 jest.dontMock('../Checkbox');
 
+import React from 'react';
+import TestUtils from 'react-addons-test-utils';
+
 describe('Checkbox', () => {
 
-    const React = require('react');
-    const TestUtils = require('react-addons-test-utils');
-
-    const Checkbox = require('../Checkbox');
+    const Checkbox = require('../Checkbox').default;
 
     const label = 'Checkbox Test';
 
@@ -19,7 +19,7 @@ describe('Checkbox', () => {
 
         // Render a checkbox in the document
         const checkbox = TestUtils.renderIntoDocument(
-            <Checkbox action={simulateClick} isChecked={true} label={label} />
+            <Checkbox isChecked={true} label={label} onAction={simulateClick} />
         );
 
         const checkboxComponent = TestUtils.findRenderedDOMComponentWithClass(checkbox, 'checkbox-component');
@@ -52,7 +52,7 @@ describe('Checkbox', () => {
 
         // Render a checkbox in the document
         const checkbox = TestUtils.renderIntoDocument(
-            <Checkbox action={() => {}} label={label} />
+            <Checkbox label={label} onAction={() => {}} />
         );
 
         const checkboxLabel = TestUtils.findRenderedDOMComponentWithClass(checkbox, 'checkbox-label');
@@ -63,7 +63,7 @@ describe('Checkbox', () => {
 
         // Render a checkbox in the document
         const checkbox = TestUtils.renderIntoDocument(
-            <Checkbox action={() => {}} isChecked={true} />
+            <Checkbox isChecked={true} onAction={() => {}} />
         );
 
         const checkMark = TestUtils.findRenderedDOMComponentWithClass(checkbox, 'fa-check');
@@ -74,7 +74,7 @@ describe('Checkbox', () => {
 
         // Render a checkbox in the document
         const checkbox = TestUtils.renderIntoDocument(
-            <Checkbox action={() => {}} withPadding={true} />
+            <Checkbox onAction={() => {}} withPadding={true} />
         );
 
         const checkboxComponent = TestUtils.findRenderedDOMComponentWithClass(checkbox, 'with-padding');
@@ -85,7 +85,7 @@ describe('Checkbox', () => {
 
         // Render a checkbox in the document
         const checkbox = TestUtils.renderIntoDocument(
-            <Checkbox action={() => {}} />
+            <Checkbox onAction={() => {}} />
         );
 
         const checkMark = TestUtils.scryRenderedDOMComponentsWithClass(checkbox, 'fa-check');

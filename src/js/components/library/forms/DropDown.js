@@ -1,9 +1,103 @@
 import React, {Component, PropTypes} from 'react';
 import ReactDom from 'react-dom';
 
-import componentsConfig from '../../../config/componentsConfig';
+import styleConfig from '../../../config/styleConfig';
 import Loader from '../Loader';
 import {formatMessage} from '../../../utils/localizationUtils';
+
+class ListItem extends Component {
+
+    static propTypes = {
+        data: PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ]),
+            name: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ])
+        }).isRequired,
+        onAction: PropTypes.func.isRequired,
+        valueId: PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.string
+        ]),
+        width: PropTypes.number.isRequired
+    };
+
+    constructor() {
+        super();
+        this.handleAction = this.handleAction.bind(this);
+    }
+
+    handleAction() {
+        const {data: {id, name}, onAction} = this.props;
+        onAction(id, name);
+    }
+
+    render() {
+        const {data, valueId, width} = this.props;
+
+        return (
+            <li
+                className={`drop-down-list-item ${data.id === valueId ? 'selected' : ''}`}
+                onClick={this.handleAction}
+                style={{width}}
+                title={data.name}
+            >
+                {data.name}
+            </li>
+        );
+    }
+}
+
+function dropDownList() {
+    const {
+        dropDownListItemWidth, hasFetched, isFetching, list, value
+    } = this.state;
+
+    let listItems;
+
+    if (isFetching && !list[0]) {
+        // eslint-disable-next-line no-extra-parens
+        listItems = (
+            <li className="drop-down-list-item-loader">
+                <Loader />
+            </li>
+        );
+    } else if (hasFetched && !list[0]) {
+        // eslint-disable-next-line no-extra-parens
+        listItems = (
+            <li className="drop-down-list-item-empty">
+                {formatMessage('NO_ITEMS_AVAILABLE')}
+            </li>
+        );
+    } else {
+        listItems = list.map((item, index) => {
+            const valueId = value && value.id;
+
+            return (
+                <ListItem
+                    data={item}
+                    key={index}
+                    onAction={this.handleItemClick}
+                    valueId={valueId}
+                    width={dropDownListItemWidth}
+                />
+            );
+        });
+    }
+
+    return (
+        <ul
+            className="drop-down-list"
+            ref={c => (this.dropDownList = c)}
+        >
+            {listItems}
+        </ul>
+    );
+}
 
 /*
  * DropDown class.
@@ -29,17 +123,48 @@ import {formatMessage} from '../../../utils/localizationUtils';
  *
  */
 export default class DropDown extends Component {
+
+    static propTypes = {
+        action: PropTypes.func.isRequired,
+        attribute: PropTypes.string.isRequired,
+        error: PropTypes.string,
+        list: PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ]),
+            name: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ])
+        })).isRequired,
+        listSource: PropTypes.func,
+        placeholder: PropTypes.string,
+        value: PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ]),
+            name: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ])
+        })
+    };
+
     constructor(props) {
         super(props);
         this.state = {
-            hasFetched: false,
+            hasFetched: !props.listSource, // true if listSource is undefined
             isExpanded: false,
             isFetching: false,
             list: props.list,
-            dropDownListItemWidth: componentsConfig.dropDown.listItemWidth,
+            dropDownListItemWidth: styleConfig.dropDown.listItemWidth,
             value: props.value
         };
         this.handleDocumentClick = this.handleDocumentClick.bind(this);
+        this.handleItemClick = this.handleItemClick.bind(this);
+        this.handleToggleExpanded = this.handleToggleExpanded.bind(this);
     }
 
     componentDidMount() {
@@ -87,11 +212,11 @@ export default class DropDown extends Component {
             value: {id, name}
         });
 
-        this.toggleExpanded();
+        this.handleToggleExpanded();
     }
 
     setDropDownListItemWidth() {
-        const dropDownList = this.refs.dropDownList;
+        const dropDownList = this.dropDownList;
 
         if (dropDownList) {
             const newDropDownListItemWidth = dropDownList.clientWidth;
@@ -105,7 +230,7 @@ export default class DropDown extends Component {
         }
     }
 
-    toggleExpanded() {
+    handleToggleExpanded() {
         const {hasFetched, isExpanded, list} = this.state;
         const listSource = this.props.listSource;
 
@@ -123,64 +248,33 @@ export default class DropDown extends Component {
     }
 
     render() {
-        const {
-            dropDownListItemWidth, hasFetched, isExpanded,
-            isFetching, list, value
-        } = this.state;
+        const {isExpanded, value} = this.state;
 
-        const dropDownList = () => {
-            let listItems;
-
-            if (isFetching && !list[0]) {
-                listItems = (
-                    <li className="drop-down-list-item-loader">
-                        <Loader />
-                    </li>
-                );
-            } else if (hasFetched && !list[0]) {
-                listItems = (
-                    <li className="drop-down-list-item-empty">
-                        {formatMessage('NO_ITEMS_AVAILABLE')}
-                    </li>
-                );
-            } else {
-                listItems = list.map((item, index) => {
-                    const valueId = value && value.id;
-
-                    return (
-                        <li className={`drop-down-list-item ${item.id === valueId ? 'selected' : ''}`}
-                            key={index}
-                            onClick={this.handleItemClick.bind(this, item.id, item.name)}
-                            style={{width: dropDownListItemWidth}}
-                            title={item.name}>{item.name}</li>
-                    );
-                });
-            }
-
-            return (
-                <ul className="drop-down-list" ref="dropDownList">{listItems}</ul>
-            );
-        };
+        const {error, placeholder = 'PLEASE_SELECT'} = this.props;
 
         return (
-            <div className={`drop-down-component ${isExpanded ? 'is-expanded' : ''}`}>
-                <div className="drop-down-value" onClick={this.toggleExpanded.bind(this)}>
+            <div className={`drop-down-component ${isExpanded ? 'is-expanded' : ''} ${error ? 'has-error' : ''}`}>
+                <div
+                    className="drop-down-value"
+                    onClick={this.handleToggleExpanded}
+                >
                     <span className={!value ? 'no-value' : null}>
-                        {value ? value.name : formatMessage(this.props.placeholder || 'PLEASE_SELECT')}
+                        {value ? value.name : formatMessage(placeholder)}
                     </span>
                     <i className={`fa fa-caret-${isExpanded ? 'up' : 'down'} drop-down-value-icon`} />
                 </div>
-                {isExpanded && dropDownList()}
+                {error &&
+                    <div className="form-column-item-error-icon">
+                        <i className="fa fa-times-circle" />
+                    </div>
+                }
+                {error &&
+                    <div className="form-column-item-error-message">
+                        {error}
+                    </div>
+                }
+                {isExpanded && dropDownList.call(this)}
             </div>
         );
     }
 }
-
-DropDown.propTypes = {
-    action: PropTypes.func.isRequired,
-    attribute: PropTypes.string.isRequired,
-    list: PropTypes.array.isRequired,
-    listSource: PropTypes.func,
-    placeholder: PropTypes.string,
-    value: PropTypes.object
-};

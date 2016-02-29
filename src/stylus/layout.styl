@@ -44,6 +44,7 @@
     
             .error-refresh {
                 cursor: pointer
+                padding-left: 5px
                 text-decoration: underline
             }
         }
@@ -137,12 +138,14 @@
 }
 
 .page-footer {
+    font-family-light()
     background: $footer-background
     bottom: 0
     color: $footer-text
-    height: 30px
-    left: 240px
-    line-height: 30px
+    font-size: 1.1rem
+    height: 32px
+    left: 0
+    line-height: 32px
     padding: 0 $default-content-padding
     position: absolute
     right: 0
@@ -179,6 +182,7 @@
             }
     
             &.float {
+                font-family-light()
                 float: left
                 font-size: 1.6rem
                 line-height: 72px
@@ -273,7 +277,7 @@
 
 .page-side-column {
     background: $side-column-background
-    bottom: 0
+    bottom: 32px
     color: $side-column-text
     left: 0
     position: absolute
@@ -282,38 +286,84 @@
 }
 
 .page-side-nav {
-    padding-top: 10px
+    color: $side-column-link
 
-    .section-heading > span {
-        text-transform: uppercase
+    .section-heading {
+        & div {
+            background-color: $side-column-section-background
+            border-color: $side-column-section-border
+            border-style: solid
+            border-width: 1px 0 1px 0
+            line-height: 54px
+
+            &.active {
+                background: $side-column-background
+                border: none
+                color: $side-column-text
+                line-height: 60px
+                margin-bottom: -14px
+            }
+
+            & :first-child {
+                padding-left: 7px
+                vertical-align: middle
+                width: 20px
+            }
+
+            & :nth-child(2) {
+                font-size: 2.7rem
+                padding: 6px 8px
+                vertical-align: middle
+                width: 43px
+            }
+
+            & span {
+                vertical-align: middle
+            }
+        }
+
+        .section-heading {
+            & div {
+                background: $side-column-background
+                border: none
+                height: 29px
+                line-height: 29px
+                margin: 0
+                padding-left: 24px
+
+                & :first-child {
+                    padding-left: 0
+                    width: 7px
+                }
+
+                & :nth-child(2) {
+                    font-size: 1.3rem
+                }
+            }
+        }
     }
 
     li {
-        font-size: 1.1rem
+        cursor: pointer
+        font-size: 1.6rem
         line-height: 29px
-        margin-bottom: 15px
-        padding: 0 $default-content-padding
 
         li {
             font-size: 1.3rem
-            // negate $default-content-padding
-            margin: 0 -24px
-  
+
             & > a {
-                display: block
                 color: $side-column-link
-                // negate $default-content-padding
-                margin: 0 -24px
-                padding: 0 $default-content-padding
+                display: block
+                padding: 0 0 0 39px
             }
-  
+
             &:hover > a, &.selected > a {
                 background: $side-column-link-selected-background
                 color: $side-column-link-selected
             }
 
             li > a {
-                padding-left: 48px;
+                padding-left: 48px
             }
         }
     }

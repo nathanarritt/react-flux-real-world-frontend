@@ -18,10 +18,12 @@ export default {
             label: 'RFRWF_WIDGETS_HEADING_TWO',
             className: 'section-heading',
             children: [
-                /*{
+
+                /* {
                     label: 'RFRWF_TABLE_TABS_TOGGLE',
                     pathname: '/widgets/table-tabs-toggle'
-                },*/
+                }, */
+
                 {
                     label: 'RFRWF_TABLE_NESTED_TABLE',
                     pathname: '/widgets/table-nested-table'

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import {Router} from 'react-router';
+import {hashHistory, Router} from 'react-router';
 
 import routes from './config/routes';
 import sessionActions from './actions/sessionActions';
@@ -11,12 +11,14 @@ function renderApp(response) {
     let content;
 
     if (response) {
+        // eslint-disable-next-line no-extra-parens
         content = (
-            <Router>
+            <Router history={hashHistory}>
                 {routes}
             </Router>
         );
     } else {
+        // eslint-disable-next-line no-extra-parens
         content = (
             <Loader />
         );

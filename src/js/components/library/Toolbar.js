@@ -2,6 +2,49 @@ import React, {Component, PropTypes} from 'react';
 
 import {formatMessage} from '../../utils/localizationUtils';
 
+class LinkItem extends Component {
+
+    static propTypes = {
+        item: PropTypes.shape({
+            action: PropTypes.func,
+            icon: PropTypes.string,
+            label: PropTypes.string,
+            style: PropTypes.string,
+            type: PropTypes.string
+        }).isRequired
+    };
+
+    constructor() {
+        super();
+        this.handleAction = this.handleAction.bind(this);
+    }
+
+    handleAction() {
+        const {item} = this.props;
+        const {action} = item;
+
+        if (typeof action === 'function') {
+            action(null);
+        }
+    }
+
+    render() {
+        const item = this.props.item;
+        const {icon, label, style, type} = item;
+
+        return (
+            <div
+                className={`toolbar-item ${type}`}
+                onClick={this.handleAction}
+                style={style}
+            >
+                {icon && <i className={icon} />}
+                {label && <span>{formatMessage(label)}</span>}
+            </div>
+        );
+    }
+}
+
 /*
  * Toolbar class.
  *
@@ -26,7 +69,7 @@ import {formatMessage} from '../../utils/localizationUtils';
  *
  * const toolbarConfig = [
  *     {
- *         action: this.handleActionOpen.bind(this),
+ *         action: this.handleOpen,
  *         icon: 'fa fa-plus-circle',
  *         label: 'ADD_NEW_NODE',
  *         type: 'link'
@@ -34,49 +77,40 @@ import {formatMessage} from '../../utils/localizationUtils';
  * ];
  *
  */
-export default class Toolbar extends Component {
-    handleAction(item, data) {
-        item.action(data);
-    }
+export default function Toolbar({config}) {
+    const content = config.map((item, index) => {
 
-    render() {
-        const content = this.props.config.map((item, index) => {
+        if (/link|back-link/.test(item.type)) {
+            return (
+                <LinkItem
+                    item={item}
+                    key={index}
+                />
+            );
+        }
 
-            if (/link|back-link/.test(item.type)) {
-                return (
-                    <div
-                        className={`toolbar-item ${item.type}`}
-                        key={index}
-                        onClick={this.handleAction.bind(this, item, null)}
-                        style={item.style}>
+        if (item.type === 'element') {
+            return (
+                <div
+                    className="toolbar-item element"
+                    key={index}
+                    style={item.style}
+                >
+                    {item.element}
+                </div>
+            );
+        }
 
-                        {item.icon && <i className={item.icon} />}
-                        {item.label && <span>{formatMessage(item.label)}</span>}
-                    </div>
-                );
-            }
+        return null;
+    });
 
-            if (item.type === 'element') {
-                return (
-                    <div
-                        className="toolbar-item element"
-                        key={index}
-                        style={item.style}>
-
-                        {item.element}
-                    </div>
-                );
-            }
-        });
-
-        return (
-            <div className="toolbar-component">
-                {content}
-            </div>
-        );
-    }
+    return (
+        <div className="toolbar-component">
+            {content}
+        </div>
+    );
 }
 
 Toolbar.propTypes = {
-    config: PropTypes.array.isRequired
+    config: PropTypes.arrayOf(PropTypes.object).isRequired
 };

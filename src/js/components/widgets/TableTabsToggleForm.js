@@ -99,7 +99,7 @@ export default class TableTabsToggleForm extends Component {
     }
 
     render() {
-        const {fieldErrors, fieldValues, hasError} = this.state;
+        const {fieldErrors, fieldValues} = this.state;
 
         const formConfig = {
             elements: [
@@ -165,16 +165,17 @@ export default class TableTabsToggleForm extends Component {
             defaultAction: this.handleChange.bind(this)
         };
 
-        const {handleClose, isLoading} = this.props;
-
         return (
-            <Form config={formConfig} data={fieldValues} />
+            <Form
+                config={formConfig}
+                data={fieldValues}
+            />
         );
     }
 }
 
 TableTabsToggleForm.propTypes = {
-    data: PropTypes.object.isRequired,
+    data: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
     disableSave: PropTypes.bool,
     handleClose: PropTypes.func.isRequired,
     handleSave: PropTypes.func.isRequired,

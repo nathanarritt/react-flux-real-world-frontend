@@ -14,8 +14,8 @@ const parseOptions = {
     booleanTextAttributes: [
         {
             attribute: 'disabled',
-            true: 'DISABLE',
-            false: 'ENABLE'
+            true: 'DISABLE', // eslint-disable-line quote-props
+            false: 'ENABLE' // eslint-disable-line quote-props
         }
     ],
     inverseBooleanAttributes: [
@@ -180,7 +180,7 @@ class TableNestedTableStore extends Store {
                     this.emitChange();
                     break;
 
-                case actionTypes.TABLE_NESTED_TABLE_SET_SELECTED_CLUSTER:
+                case actionTypes.TABLE_NESTED_TABLE_SET_SELECTED_CLUSTER: {
                     const selectedClusterData = store.getIn(
                         ['selectedCluster', 'data']
                     );
@@ -198,6 +198,7 @@ class TableNestedTableStore extends Store {
 
                     this.emitChange();
                     break;
+                }
 
                 case actionTypes.TABLE_NESTED_TABLE_UPDATE_SUCCESS:
                     store = store.merge({

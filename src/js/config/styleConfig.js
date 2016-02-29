@@ -7,6 +7,16 @@ export default {
         listItemWidth: 280
     },
 
+    form: {
+        sectionLastChildBottomMargin: 12
+    },
+
+    listBuilder: {
+
+        // 4 is for margin-right, 1 is for browsers using float pixel sizes on button width
+        inputMarginRight: 5
+    },
+
     modal: {
 
         // used to determine if scrollbar is needed

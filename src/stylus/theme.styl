@@ -1,83 +1,74 @@
-/* Zscaler Brand Color Palette */
-$zscaler-blue = #009cda
-$zscaler-dark-blue = #00539f
-$zscaler-orange = #f4aa00
-$zscaler-light-green = #aacf32
-$zscaler-dark-green = #399c1d
-$zscaler-purple = #9962c0
-$zscaler-yellow = #ffd500
-$zscaler-mint = #9ac2b9
-$zscaler-red = #fd4239
-$zscaler-light-gray = #efeff0
-$zscaler-light-mid-gray = #d0d1d3
-$zscaler-mid-gray = #aeb0b0
-$zscaler-dark-gray = #78797a
-$zscaler-charcoal = #4c4f54
-$zscaler-black = #000
-$zscaler-white = #fff
+/* ZSCM Color Palette */
+$zscm-blue = #009cda
+$zscm-light-gray = #efeff0
+$zscm-light-mid-gray = #d0d1d3
+$zscm-mid-gray = #aeb0b0
+$zscm-dark-gray = #78797a
+$zscm-white = #fff
 
 /* main layout components */
 
-$default-background = $zscaler-white
+$default-background = $zscm-white
 $default-text = #383a40
 $default-warning-text = red
-$footer-background = $zscaler-light-gray
-$footer-text = $zscaler-dark-gray
-$footer-text-secondary = #939393
-$header-background = $zscaler-dark-blue
-$header-link = #76beff
-$header-link-selected = $zscaler-white
-$header-link-selected-background = $zscaler-dark-blue
+$footer-background = $zscm-blue
+$footer-text = $zscm-white
+$header-background = $zscm-blue
+$header-link = #afe8ff
+$header-link-selected = $zscm-white
+$header-link-selected-background = $zscm-blue
 $header-text = #939393
-$side-column-background = $zscaler-light-gray
-$side-column-link = #00bce4
-$side-column-link-selected = $zscaler-white
-$side-column-link-selected-background = $zscaler-dark-blue
-$side-column-text = #95989c
+$side-column-background = $zscm-light-gray
+$side-column-link = #009dd0
+$side-column-link-selected = $zscm-white
+$side-column-link-selected-background = $zscm-blue
+$side-column-section-background = #f3f3f3
+$side-column-section-border = #e3e3e3
+$side-column-text = #77797c
 
 /* Button component */
 
 $button-delete-background = #c0392b
-$button-delete-text = $zscaler-white
+$button-delete-text = $zscm-white
 $button-disabled-border = #dddddd
 /* $button-hover-background: #ccc;
 $button-hover-border: #c2c2c2; */
 $button-icon = #7a7a7a
 $button-primary-background = #1db3e9
-$button-primary-text = $zscaler-white
+$button-primary-text = $zscm-white
 $button-text = #77797c
 
 /* Checkbox component */
-$checkbox-field-background = $zscaler-white
+$checkbox-field-background = $zscm-white
 $checkbox-field-border = #2a2c30
 $checkbox-field-text = #2a2c30
 
 /* ContextSelector component */
 
-$context-selector-options-after-border = $zscaler-white
-$context-selector-options-background = $zscaler-white
+$context-selector-options-after-border = $zscm-white
+$context-selector-options-background = $zscm-white
 $context-selector-options-before-border = #2a2c30
 $context-selector-options-border = #2a2c30
 $context-selector-options-hover-background = #e4faff
 $context-selector-options-selected-background = #009dd0
-$context-selector-options-selected-text = $zscaler-white
+$context-selector-options-selected-text = $zscm-white
 $context-selector-options-text = #009dd0
 
 /* DropDown component */
 
-$drop-down-list-background = $zscaler-white
+$drop-down-list-background = $zscm-white
 $drop-down-list-border = #2a2c30
 $drop-down-list-text = #009dd0
 $drop-down-list-item-hover-background = #009dd0
-$drop-down-list-item-hover-text = $zscaler-white
+$drop-down-list-item-hover-text = $zscm-white
 
 /* Error component */
 
-$error-body-background = $zscaler-white
+$error-body-background = $zscm-white
 $error-body-border = #e0e1e3
 $error-body-text = #2a2c30
 $error-header-background = #009dd0
-$error-header-text = $zscaler-white
+$error-header-text = $zscm-white
 
 /* Form component */
 
@@ -85,33 +76,44 @@ $form-placeholder-text = #77797c
 $form-section-background = #f3f3f3
 $form-section-column-label = #2a2c30
 $form-section-heading-text = #77797c
-$form-text-input-background = $zscaler-white
+$form-text-input-background = $zscm-white
 $form-text-input-border = #2a2c30
 $form-text-input-placeholder = #77797c
 $form-text-input-readonly-text = #939393
 $form-text-input-text = #2a2c30
 $form-toggle-section-heading-text = #009dd0
+$form-error-background = $zscm-white
+$form-error-border = #eb0b00
+$form-error-text = #eb0b00
+
+/* ListBuilder component */
+$list-builder-console-background = $zscm-white
+$list-builder-item-error = #eb0b00
+$list-builder-item-hover = $zscm-mid-gray
+$list-builder-items-count = $zscm-dark-gray
+$list-builder-remove-all = #1db3e9
+$list-builder-remove-item-icon = $zscm-dark-gray
 
 /* Login component */
 
-$login-body-background = $zscaler-white
+$login-body-background = $zscm-white
 $login-body-border = #e0e1e3
 $login-body-text = #2a2c30
 $login-error-text = #f00
 $login-footer-background = #f3f3f3
 $login-footer-border = #e0e1e3
-$login-footer-text = $zscaler-dark-gray
+$login-footer-text = $zscm-dark-gray
 $login-header-background = #009dd0
-$login-header-text = $zscaler-white
+$login-header-text = $zscm-white
 
 /* Modal component */
 
-$modal-body-background = $zscaler-white
+$modal-body-background = $zscm-white
 $modal-body-text = #2a2c30
 $modal-footer-background = #f3f3f3
 $modal-footer-border = #e0e1e3
 $modal-header-background = #009dd0
-$modal-header-text = $zscaler-white
+$modal-header-text = $zscm-white
 
 /* MultiSelect component */
 
@@ -120,11 +122,11 @@ $multi-select-footer-border = #939393
 $multi-select-footer-border-top = #e0e1e3
 $multi-select-header-background = #009dd0
 $multi-select-header-border = #00bce4
-$multi-select-header-text = $zscaler-white
-$multi-select-list-background = $zscaler-white
+$multi-select-header-text = $zscm-white
+$multi-select-list-background = $zscm-white
 $multi-select-list-border = #e0e1e3
 $multi-select-list-children-background = #e0e1e3
-$multi-select-list-children-hover-background = $zscaler-light-mid-gray
+$multi-select-list-children-hover-background = $zscm-light-mid-gray
 $multi-select-list-children-text = #2a2c30
 $multi-select-list-children-hover-text = #2a2c30
 $multi-select-list-text = #2a2c30
@@ -136,16 +138,16 @@ $nested-table-child-head-text = #2a2c30
 $nested-table-data-icon-expand = $default-text
 
 /* RadioButtons component */
-$radio-button-background = $zscaler-white
+$radio-button-background = $zscm-white
 $radio-button-border = #009dd0
 $radio-button-hover-background = #e4faff
 $radio-button-selected-background = #009dd0
-$radio-button-selected-text = $zscaler-white
+$radio-button-selected-text = $zscm-white
 $radio-button-text = #009dd0
 
 /* Search component */
 
-$search-background = $zscaler-white
+$search-background = $zscm-white
 $search-border = #939393
 $search-icon = #77797c
 $search-placeholder = #939393
@@ -153,13 +155,14 @@ $search-text = #2a2c30
 
 /* Table component */
 
-$table-data-border = $zscaler-white
+$table-data-border = $zscm-white
 $table-data-icon = #009dd0
 $table-data-text = $default-text
 $table-head-background = #777777
-$table-head-text = $zscaler-white
+$table-head-text = $zscm-white
+$table-multi-data-label = $zscm-dark-gray
 $table-row-background = #efefef
-$table-row-even-background = $zscaler-white
+$table-row-even-background = $zscm-white
 
 /* ToggleButton component */
 $toggle-button-icon-text = #fff
@@ -168,5 +171,9 @@ $toggle-button-on-background = #5a9809
 $toggle-button-switch-background = #fff
 
 /* Toolbar component */
-
 $toolbar-item-link = #00bce4
+
+/* Switch toggle button */
+$switch-button-disabled = #939393
+$switch-button-lowlight = #f3f3f3
+$switch-button-highlight = #00bce4

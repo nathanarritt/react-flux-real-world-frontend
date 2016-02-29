@@ -8,7 +8,7 @@ import {formatMessage} from '../../utils/localizationUtils';
 import TableTabsToggleForm from './TableTabsToggleForm';
 
 function getTabsToolbarConfig() {
-    const {data, handleClose} = this.props;
+    const {data, onClose} = this.props;
 
     const instanceElement = (
         <div>{data && data.name ? data.name : formatMessage('RFRWF_ADD_NEW_TABLE_TABS_TOGGLE')}</div>
@@ -16,7 +16,7 @@ function getTabsToolbarConfig() {
 
     return [
         {
-            action: handleClose,
+            action: onClose,
             icon: 'fa fa-caret-left',
             label: 'RFRWF_BACK_TO_TABLE_TABS_TOGGLE',
             type: 'back-link'
@@ -54,16 +54,19 @@ function handleExternalLink(selectedItem) {
 }
 
 function getTabsConfig() {
-    const {data, handleClose, handleSave} = this.props;
+    const {data, onClose, onSave} = this.props;
 
     return {
         tabs: [
             {
                 label: 'SERVER_CONFIGURATION',
-                content: <TableTabsToggleForm
-                             data={data}
-                             handleClose={handleClose}
-                             handleSave={handleSave} />
+                content: (
+                    <TableTabsToggleForm
+                        data={data}
+                        onClose={onClose}
+                        onSave={onSave}
+                    />
+                )
             },
             {
                 label: 'COMMENTS',
@@ -90,11 +93,14 @@ function getTabsConfig() {
                 type: 'link'
             },
             {
-                component: <ContextSelector
-                               action={handleExternalLink}
-                               allowRepeat
-                               defaultText="EXTERNAL_LINKS"
-                               list={getExternalLinksList()} />,
+                component: (
+                    <ContextSelector
+                        action={handleExternalLink}
+                        allowRepeat
+                        defaultText="EXTERNAL_LINKS"
+                        list={getExternalLinksList()}
+                    />
+                ),
                 type: 'component'
             }
         ]
@@ -111,15 +117,16 @@ export default class TableTabsToggleTabs extends Component {
                 <Tabs
                     config={getTabsConfig.call(this)}
                     isLoading={isLoading}
-                    withToolbar />
+                    withToolbar
+                />
             </div>
         );
     }
 }
 
 TableTabsToggleTabs.propTypes = {
-    data: PropTypes.object.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    handleSave: PropTypes.func.isRequired,
-    isLoading: PropTypes.bool
+    data: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    isLoading: PropTypes.bool,
+    onClose: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired
 };

@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import ReactDom from 'react-dom';
 
-import componentsConfig from '../../config/componentsConfig';
+import styleConfig from '../../config/styleConfig';
 import Loader from './Loader';
 import {formatMessage} from '../../utils/localizationUtils';
 
@@ -18,22 +18,23 @@ import {formatMessage} from '../../utils/localizationUtils';
  *
  * The following props are supported:
  *
+ * bodyHeight {number} Set a specific height for the modal.
  * children {array of elements | element} An array of React elements or a single
  *     React element. This is the content that populates the `modal-body`.
  * disableSave {boolean} Disable Save button when necessary such as form errors.
- * handleAlert {function} A method that handles the alert action. If this method
+ * onAlert {function} A method that handles the alert action. If this method
  *     is provided, the modal type is `alert`.
- * handleClose {function} A method that handles the close action.
- * handleConfirm {function} A method that handles the confirm action. If this
+ * onClose {function} A method that handles the close action.
+ * onConfirm {function} A method that handles the confirm action. If this
  *     method is provided, the modal type is `confirm`.
- * handleSave {function} A method that handles the save action.
+ * onSave {function} A method that handles the save action.
  * isLoading {boolean} The isLoading state from the view where state is managed.
  * title {string} (required) Localization key or text to use as the title.
  *
  * @example <caption>Example usage:</caption>
  *
- *          <Modal handleClose={handleClose}
- *                 handleConfirm={this.handleConfirm.bind(this)}
+ *          <Modal onClose={onClose}
+ *                 onConfirm={this.handleConfirm}
  *                 isLoading={isLoading}
  *                 title={title ? localizationUtils.formatMessage(title, [data[attribute]]) : defaultTitle}
  *                 type="confirm">
@@ -45,57 +46,77 @@ import {formatMessage} from '../../utils/localizationUtils';
  *
  */
 export default class Modal extends Component {
+
+    static propTypes = {
+        bodyHeight: PropTypes.number,
+        children: PropTypes.oneOfType([
+            PropTypes.array,
+            PropTypes.element,
+            PropTypes.string
+        ]),
+        disableSave: PropTypes.bool,
+        isLoading: PropTypes.bool,
+        onAlert: PropTypes.func,
+        onClose: PropTypes.func,
+        onConfirm: PropTypes.func,
+        onSave: PropTypes.func,
+        title: PropTypes.string.isRequired
+    };
+
     constructor(props) {
         super(props);
         this.state = {
             bodyHeight: 'auto',
-            bodyOverflowY: 'visible',
             contentMarginTop: 0
         };
+        this.handleSave = this.handleSave.bind(this);
     }
 
     componentDidMount() {
         this.setDisplayState();
     }
 
-    componentDidUpdate() {
-        this.setDisplayState();
-    }
-
     handleSave() {
-        const {disableSave, handleSave} = this.props;
+        const {disableSave, onSave} = this.props;
 
         if (!disableSave) {
-            handleSave();
+            // destructuring onSave breaks the build for some reason
+            onSave();
         }
     }
 
     setDisplayState() {
         const componentHeight = ReactDom.findDOMNode(this).offsetHeight;
 
-        const bodyChildrenHeight = this.refs.modalBodyChildren.offsetHeight;
-        const footerHeight = this.refs.modalFooter.offsetHeight;
-        const headerHeight = this.refs.modalHeader.offsetHeight;
+        const bodyChildrenHeight = this.modalBodyChildren.offsetHeight;
+        const footerHeight = this.modalFooter.offsetHeight;
+        const headerHeight = this.modalHeader.offsetHeight;
 
         const {
-            bodyPaddingTopAndBottom, componentPaddingTopAndBottom
-        } = componentsConfig.modal;
+            modal: {bodyPaddingTopAndBottom, componentPaddingTopAndBottom},
+            form: {sectionLastChildBottomMargin: formSectionLastChildBottomMargin}
+        } = styleConfig;
 
-        const contentHeight = bodyChildrenHeight + bodyPaddingTopAndBottom +
-                              footerHeight + headerHeight;
+        let bodyHeight = this.props.bodyHeight;
+        let contentHeight;
 
-        let bodyHeight;
-        let bodyOverflowY;
-
-        if (contentHeight >= (componentHeight - componentPaddingTopAndBottom)) {
-
-            // display scrollbar
-            bodyHeight = componentHeight - componentPaddingTopAndBottom -
-                         footerHeight - headerHeight;
-            bodyOverflowY = 'auto';
+        if (bodyHeight) {
+            contentHeight = bodyHeight + footerHeight + headerHeight;
         } else {
-            bodyHeight = 'auto';
-            bodyOverflowY = 'visible';
+            contentHeight = bodyChildrenHeight + bodyPaddingTopAndBottom +
+                              footerHeight + headerHeight;
+        }
+
+        if (!bodyHeight) {
+            if (contentHeight >= (componentHeight - componentPaddingTopAndBottom)) {
+
+                // display scrollbar
+                bodyHeight = componentHeight - componentPaddingTopAndBottom -
+                             footerHeight - headerHeight;
+            } else {
+                bodyHeight = bodyChildrenHeight + bodyPaddingTopAndBottom +
+                             formSectionLastChildBottomMargin;
+            }
         }
 
         // vertically center content
@@ -113,7 +134,6 @@ export default class Modal extends Component {
 
         if (isBodyHeightChanged) {
             newState.bodyHeight = bodyHeight;
-            newState.bodyOverflowY = bodyOverflowY;
         }
 
         if (isContentMarginTopChanged) {
@@ -127,15 +147,15 @@ export default class Modal extends Component {
 
     render() {
         const {
-            children, disableSave, handleAlert, handleClose, handleConfirm,
-            handleSave, isLoading, title
+            children, disableSave, isLoading, onAlert, onClose, onConfirm,
+            onSave, title
         } = this.props;
 
         let type = 'form';
 
-        if (handleAlert) {
+        if (onAlert) {
             type = 'alert';
-        } else if (handleConfirm) {
+        } else if (onConfirm) {
             type = 'confirm';
         }
 
@@ -144,14 +164,13 @@ export default class Modal extends Component {
         };
 
         const modalBodyStyle = {
-            height: this.state.bodyHeight,
-            overflowY: this.state.bodyOverflowY
+            height: this.state.bodyHeight
         };
 
         const {
             transitionAppear, transitionAppearTimeout,
             transitionEnterTimeout, transitionLeaveTimeout
-        } = componentsConfig.modal;
+        } = styleConfig.modal;
 
         return (
             <div className={`modal-component ${type}`}>
@@ -160,43 +179,70 @@ export default class Modal extends Component {
                     transitionAppearTimeout={transitionAppearTimeout}
                     transitionEnterTimeout={transitionEnterTimeout}
                     transitionLeaveTimeout={transitionLeaveTimeout}
-                    transitionName="modal">
-
-                    <div className="modal-content" style={modalContentStyle}>
-                        <div className="modal-header" ref="modalHeader">
+                    transitionName="modal"
+                >
+                    <div
+                        className="modal-content"
+                        style={modalContentStyle}
+                    >
+                        <div
+                            className="modal-header"
+                            ref={c => (this.modalHeader = c)}
+                        >
                             <span className="modal-title">
                                 {formatMessage(title)}
                             </span>
-                            {handleClose &&
-                                <i className="fa fa-remove modal-close-icon" onClick={handleClose} />
+                            {onClose &&
+                                <i
+                                    className="fa fa-remove modal-close-icon"
+                                    onClick={onClose}
+                                />
                             }
                         </div>
-                        <div className="modal-body" style={modalBodyStyle}>
-                            <div className="modal-body-children" ref="modalBodyChildren">
+                        <div
+                            className="modal-body"
+                            style={modalBodyStyle}
+                        >
+                            <div
+                                className="modal-body-children"
+                                ref={c => (this.modalBodyChildren = c)}
+                            >
                                 {children}
                             </div>
                         </div>
-                        <div className="modal-footer" ref="modalFooter">
-                            {handleAlert &&
-                                <span className="button primary" onClick={handleAlert}>
+                        <div
+                            className="modal-footer"
+                            ref={c => (this.modalFooter = c)}
+                        >
+                            {onAlert &&
+                                <span
+                                    className="button primary"
+                                    onClick={onAlert}
+                                >
                                     {formatMessage('OK')}
                                 </span>
                             }
-                            {handleConfirm &&
-                                <span className="button primary" onClick={handleConfirm}>
+                            {onConfirm &&
+                                <span
+                                    className="button primary"
+                                    onClick={onConfirm}
+                                >
                                     {formatMessage('CONFIRM')}
                                 </span>
                             }
-                            {handleSave &&
+                            {onSave &&
                                 <span
                                     className={`button primary ${disableSave ? 'disabled' : ''}`}
-                                    onClick={this.handleSave.bind(this)}>
-
+                                    onClick={this.handleSave}
+                                >
                                     {formatMessage('SAVE')}
                                 </span>
                             }
-                            {handleClose &&
-                                <span className="button" onClick={handleClose}>
+                            {onClose &&
+                                <span
+                                    className="button"
+                                    onClick={onClose}
+                                >
                                     {formatMessage('CANCEL')}
                                 </span>
                             }
@@ -208,17 +254,3 @@ export default class Modal extends Component {
         );
     }
 }
-
-Modal.propTypes = {
-    children: PropTypes.oneOfType([
-        PropTypes.arrayOf(PropTypes.element),
-        PropTypes.element
-    ]),
-    disableSave: PropTypes.bool,
-    handleAlert: PropTypes.func,
-    handleClose: PropTypes.func,
-    handleConfirm: PropTypes.func,
-    handleSave: PropTypes.func,
-    isLoading: PropTypes.bool,
-    title: PropTypes.string.isRequired
-};

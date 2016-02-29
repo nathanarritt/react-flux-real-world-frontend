@@ -7,6 +7,11 @@ import sessionActions from '../../actions/sessionActions';
 import sessionStore from '../../stores/sessionStore';
 
 export default class HeaderNav extends Component {
+
+    static propTypes = {
+        pathname: PropTypes.string.isRequired
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -25,7 +30,7 @@ export default class HeaderNav extends Component {
     }
 
     handleThingSelection(thing) {
-        sessionActions.setSelectedThingId(thing.id);
+        sessionActions.setSelectedCloudId(thing.id);
     }
 
     handleSessionStoreStateChange() {
@@ -45,22 +50,22 @@ export default class HeaderNav extends Component {
             pathname = '/widgets/basic-table';
         }
 
-        const componentConfig = {
-            action: this.handleThingSelection.bind(this),
-            list: this.state.thingNames,
-            selectedId: this.state.selectedThingId
+        const componentsConfig = {
+            thingSelector: {
+                list: this.state.thingNames,
+                onAction: this.handleThingSelection,
+                selectedId: this.state.selectedThingId
+            }
         };
 
         return (
             <nav className="page-header-nav">
-                <NavList componentConfig={componentConfig}
-                         config={headerNavConfig}
-                         pathname={pathname} />
+                <NavList
+                    componentsConfig={componentsConfig}
+                    config={headerNavConfig}
+                    pathname={pathname}
+                />
             </nav>
         );
     }
 }
-
-HeaderNav.propTypes = {
-    pathname: PropTypes.string.isRequired
-};

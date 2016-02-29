@@ -27,6 +27,19 @@ Globalize.loadMessages(enUs);
 Globalize.locale('en-US');
 
 /**
+ * @param {date} date The date needs to be localized and formatted
+ * @param {object} options The options of date format
+ * @return {string} Localized date in string format
+ */
+export function dateFormatter(date, options = {}) {
+    try {
+        return Globalize.dateFormatter(options)(date);
+    } catch (error) {
+        return date;
+    }
+}
+
+/**
  * Localize keys into text strings.
  *
  * @param {string} message Key in localization file

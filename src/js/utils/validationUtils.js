@@ -8,7 +8,9 @@ const patterns = {
 
     ipAddressCidr: /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([1-2]\d|3[0-2]|\d)){0,1}$/,
 
-    ipAddressRange: /^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))[\s]*-[\s]*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$/
+    ipAddressRange: /^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))[\s]*-[\s]*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$/,
+
+    portRange: /^\s*(\d+)(?:\s*-\s*(\d+))?\s*$/
 };
 
 function notRequired(val) {
@@ -19,6 +21,14 @@ function notRequired(val) {
 const validatorRegex = /(\w+)(?:\(([^\)]+)\)?)?/;
 
 const validators = {
+
+    // Checks if the value is an integer.
+    integer(val) {
+        if (notRequired(val) || (parseInt(val, 10) == val && !/\./.test(val))) { // eslint-disable-line eqeqeq
+            return '';
+        }
+        return 'VALIDATION_ERROR_INTEGER';
+    },
 
     // Checks if the string value is a valid IP address
     ipAddress(val) {
@@ -46,6 +56,90 @@ const validators = {
             return '';
         }
         return 'VALIDATION_ERROR_INVALID_IP_ADDRESS';
+    },
+
+    // Checks if the numeric value is less than or equal to limit.
+    max(val, limit) {
+        limit = parseFloat(limit);
+
+        if (notRequired(val)) {
+            return '';
+        } else if (this.number(val) === '' && parseFloat(val) > limit) {
+            return formatMessage('VALIDATION_ERROR_MAX_NUMBER', [limit]);
+        }
+        return '';
+    },
+
+    // Checks if the numeric value is greater than or equal to limit.
+    min(val, limit) {
+        limit = parseFloat(limit);
+
+        if (notRequired(val)) {
+            return '';
+        } else if (this.number(val) === '' && parseFloat(val) < limit) {
+            return formatMessage('VALIDATION_ERROR_MIN_NUMBER', [limit]);
+        }
+        return '';
+    },
+
+    // Checks if the value is a decimal number.
+    number(val) {
+        if (notRequired(val) || parseFloat(val) == val) { // eslint-disable-line eqeqeq
+            return '';
+        }
+        return 'VALIDATION_ERROR_NUMBER';
+    },
+
+    // Checks if the port is a valid integer in the correct range.
+    port(val) {
+        if (notRequired(val) ||
+            (this.integer(val) === '' && this.range(val, 1, 65535) === '')) {
+            return '';
+        }
+        return 'VALIDATION_ERROR_INVALID_PORT_NUMBER';
+    },
+
+    // Checks if the port range object has valid start and end property values.
+    portRange(val) {
+        if (notRequired(val)) {
+            return '';
+        }
+
+        const match = patterns.portRange.exec(val);
+
+        if (this.string(val) === '' && match) {
+            const start = parseInt(match[1], 10);
+            let end;
+
+            if (match[2]) {
+                if (match[1] === match[2]) {
+                    return 'VALIDATION_ERROR_SAME_START_END_PORT_RANGE';
+                }
+
+                end = parseInt(match[2], 10);
+            }
+
+            if (this.required(start) !== '' || this.integer(start) !== '' ||
+                this.range(start, 1, 65535) !== '') {
+                return 'VALIDATION_ERROR_INVALID_START_PORT_RANGE';
+            } else if (end != null) { // eslint-disable-line no-eq-null
+                if (this.integer(end) !== '' || this.range(end, start, 65535) !== '') {
+                    return 'VALIDATION_ERROR_INVALID_END_PORT_RANGE';
+                }
+            }
+        } else {
+            return 'VALIDATION_ERROR_INVALID_PORT_STRING';
+        }
+
+        return '';
+    },
+
+    // Checks if the numeric value is between min and max inclusive.
+    range(val, min, max) {
+        if (this.min(val, min) === '' && this.max(val, max) === '') {
+            return '';
+        }
+        return formatMessage('VALIDATION_ERROR_NUMBER_OUT_OF_RANGE', [min, max]);
     },
 
     required(val, message = 'VALIDATION_ERROR_REQUIRED') {
@@ -184,24 +278,44 @@ function parseValidations(validations) {
     return temp;
 }
 
-function getErrorStatus() {
-    return _.keys(this.validate.errorAttributes).length > 0;
+function getErrorStatus(errorAttributes) {
+    return errorAttributes.size > 0;
+}
+
+function clearAllErrors() {
+    this.errorAttributes.clear();
+    this.hasError = false;
+}
+
+function clearError(attribute) {
+    this.errorAttributes.delete(attribute);
+    this.hasError = getErrorStatus(this.errorAttributes);
 }
 
 function validateValue(model, attribute) {
-    let message = this.validate.validations[attribute](
+    const validate = this.validate;
+
+    let message = validate.validations[attribute](
         model[attribute], model
     );
 
     if (message !== '') {
-        message = formatMessage(message);
-        this.validate.errorAttributes[attribute] = true;
-        this.validate.hasError = true;
-    } else {
-        delete this.validate.errorAttributes[attribute];
+        if (Array.isArray(message)) {
+            message = message.map(messageItem => {
+                messageItem.message = formatMessage(messageItem.message);
+                return messageItem;
+            });
+        } else {
+            message = formatMessage(message);
+        }
 
-        if (this.validate.hasError) {
-            this.validate.hasError = getErrorStatus.call(this);
+        validate.errorAttributes.add(attribute);
+        validate.hasError = true;
+    } else {
+        validate.errorAttributes.delete(attribute);
+
+        if (validate.hasError) {
+            validate.hasError = getErrorStatus(validate.errorAttributes);
         }
     }
 
@@ -212,7 +326,7 @@ function validateAllValues(model) {
     const errors = {};
 
     _.forOwn(model, (value, attribute) => {
-        errors[attribute] = validate.call(this, model, attribute); // eslint-disable-line block-scoped-var
+        errors[attribute] = validate.call(this, model, attribute);
     });
 
     return errors;
@@ -268,9 +382,11 @@ export function bindValidations(validations, context) {
             throw new Error(errorMessage);
         }
         context.validate = validate;
+        context.validate.clearAllErrors = clearAllErrors;
+        context.validate.clearError = clearError;
         context.validate.validations = parseValidations.call(context, validations);
         context.validate.hasError = false;
-        context.validate.errorAttributes = {};
+        context.validate.errorAttributes = new Set();
     } else {
         const errorMessage = "Invalid 'context' argument provided for bindValidations."; // eslint-disable-line quotes
         throw new Error(errorMessage);

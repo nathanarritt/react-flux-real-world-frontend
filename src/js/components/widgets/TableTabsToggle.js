@@ -17,22 +17,14 @@ function getTableConfig() {
                 attribute: 'name',
                 label: 'NAME',
                 width: 25
-            },/*
-            {
-                attribute: 'node',
-                formatter(data, attribute) {
-                    return data[attribute].name;
-                },
-                label: 'NODE',
-                width: 25
-            },*/
+            },
             {
                 attribute: 'type',
                 formatter(data, attribute) {
                     return data[attribute].name;
                 },
                 label: 'TYPE',
-                width: 50
+                width: 75
             }
         ],
         controls: [
@@ -97,17 +89,19 @@ function getTableLayout() {
             <NestedTable
                 childConfig={getTableChildConfig()}
                 childData={selectedInstance.zenClusters}
-                childDataSource={this.handleChildRow}
                 config={getTableConfig.call(this)}
                 data={instances}
                 isLoading={isLoading}
-                withToolbar />
+                onChildDataSource={this.handleChildRow}
+                withToolbar
+            />
             {isConfirmAction &&
                 <ConfirmDeleteModal
                     data={actionData}
-                    handleClose={this.handleActionClose}
-                    handleConfirm={this.handleDelete}
-                    isLoading={isLoading} />
+                    isLoading={isLoading}
+                    onClose={this.handleActionClose}
+                    onConfirm={this.handleDelete}
+                />
             }
         </div>
     );
@@ -185,16 +179,18 @@ export default class TableTabsToggle extends Component {
                 {isFormAction ? (
                     <TableTabsToggleTabs
                         data={actionData}
-                        handleClose={this.handleActionClose}
-                        handleSave={this.handleActionSave}
-                        isLoading={isLoading} />
+                        isLoading={isLoading}
+                        onClose={this.handleActionClose}
+                        onSave={this.handleActionSave}
+                    />
                 ) : (
                     getTableLayout.call(this)
                 )}
                 {hasError &&
                     <Modal
-                        handleAlert={this.handleResetActionError}
-                        title={errorResponse.code}>
+                        onAlert={this.handleResetActionError}
+                        title={errorResponse.code}
+                    >
                         <p>{errorResponse.message}</p>
                     </Modal>
                 }

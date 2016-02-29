@@ -22,9 +22,9 @@ function getSearchValue(groupBy, list, searchValue) {
 
     return list.filter(item => {
         const isNameMatch = searchValueRegEx.test(item.name);
-        const isGroupByMatch = groupBy ?
-                               searchValueRegEx.test(item[groupBy].name) :
-                               false;
+        const isGroupByMatch = groupBy
+            ? searchValueRegEx.test(item[groupBy].name)
+            : false;
         return isNameMatch || isGroupByMatch;
     });
 }
@@ -154,6 +154,81 @@ function getDisplayList(data) {
     return selectedList;
 }
 
+class CategoryCheckbox extends Component {
+
+    static propTypes = {
+        data: PropTypes.shape({
+            children: PropTypes.arrayOf(PropTypes.objects)
+        }).isRequired,
+        isChecked: PropTypes.bool.isRequired,
+        onAction: PropTypes.func.isRequired
+    };
+
+    constructor() {
+        super();
+        this.handleAction = this.handleAction.bind(this);
+    }
+
+    handleAction() {
+        const {data, onAction} = this.props;
+        onAction(data.children);
+    }
+
+    render() {
+        const {data, isChecked} = this.props;
+
+        return (
+            <Checkbox
+                isChecked={isChecked}
+                label={data.name}
+                onAction={this.handleAction}
+                withPadding
+            />
+        );
+    }
+}
+
+class ItemCheckbox extends Component {
+
+    static propTypes = {
+        data: PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ]),
+            name: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ])
+        }).isRequired,
+        isChecked: PropTypes.bool.isRequired,
+        onAction: PropTypes.func.isRequired
+    };
+
+    constructor() {
+        super();
+        this.handleAction = this.handleAction.bind(this);
+    }
+
+    handleAction() {
+        const {data, onAction} = this.props;
+        onAction(data.id, data.name);
+    }
+
+    render() {
+        const {data, isChecked} = this.props;
+
+        return (
+            <Checkbox
+                isChecked={isChecked}
+                label={data.name}
+                onAction={this.handleAction}
+                withPadding
+            />
+        );
+    }
+}
+
 /**
  *
  * Builds the list item JSX structure
@@ -166,8 +241,12 @@ function getDisplayList(data) {
  */
 function getListItems(groupBy, list, type) {
     const isSelected = type === 'selected';
-    const categoryAction = isSelected ? this.handleRemoveCategory : this.handleAddCategory;
-    const itemAction = isSelected ? this.handleRemoveItem : this.handleAddItem;
+    const categoryAction = isSelected
+        ? this.handleRemoveCategory.bind(this)
+        : this.handleAddCategory.bind(this);
+    const itemAction = isSelected
+        ? this.handleRemoveItem.bind(this)
+        : this.handleAddItem.bind(this);
 
     return list.map((item, index) => {
         if (groupBy) {
@@ -175,26 +254,26 @@ function getListItems(groupBy, list, type) {
                 <li
                     className="multi-select-list-item category"
                     key={index}
-                    title={item.name}>
-
-                    <Checkbox
-                        action={categoryAction.bind(this, item.children)}
+                    title={item.name}
+                >
+                    <CategoryCheckbox
+                        data={item}
                         isChecked={isSelected}
-                        label={item.name}
-                        withPadding />
+                        onAction={categoryAction}
+                    />
                     <ul className="multi-select-list-item-children">
                         {item.children.map((child, childIndex) => {
                             return (
                                 <li
                                     className="multi-select-list-item child"
                                     key={childIndex}
-                                    title={child.name}>
-
-                                    <Checkbox
-                                        action={itemAction.bind(this, child.id, child.name)}
+                                    title={child.name}
+                                >
+                                    <ItemCheckbox
+                                        data={child}
                                         isChecked={isSelected}
-                                        label={child.name}
-                                        withPadding />
+                                        onAction={itemAction}
+                                    />
                                 </li>
                             );
                         })}
@@ -207,13 +286,13 @@ function getListItems(groupBy, list, type) {
             <li
                 className="multi-select-list-item"
                 key={index}
-                title={item.name}>
-
-                <Checkbox
-                    action={itemAction.bind(this, item.id, item.name)}
+                title={item.name}
+            >
+                <ItemCheckbox
+                    data={item}
                     isChecked={isSelected}
-                    label={item.name}
-                    withPadding />
+                    onAction={itemAction}
+                />
             </li>
         );
     });
@@ -226,12 +305,14 @@ function getUnselectedListOutput() {
     let listItems;
 
     if (isFetching && !list[0]) {
+        // eslint-disable-next-line no-extra-parens
         listItems = (
             <li className="multi-select-list-item-loader">
                 <Loader />
             </li>
         );
     } else if (hasFetched && !list[0]) {
+        // eslint-disable-next-line no-extra-parens
         listItems = (
             <li className="multi-select-list-item-empty">
                 {formatMessage('NO_ITEMS_AVAILABLE')}
@@ -303,6 +384,32 @@ function getSelectedListOutput() {
  *
  */
 export default class MultiSelect extends Component {
+
+    static propTypes = {
+        action: PropTypes.func.isRequired,
+        allowSelectAll: PropTypes.bool,
+        attribute: PropTypes.string.isRequired,
+        error: PropTypes.string,
+        expandDirection: PropTypes.string,
+        groupBy: PropTypes.string,
+        list: PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ]),
+            name: PropTypes.string
+        })).isRequired,
+        listSource: PropTypes.func,
+        placeholder: PropTypes.string,
+        value: PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string
+            ]),
+            name: PropTypes.string
+        }))
+    };
+
     constructor(props) {
         super(props);
 
@@ -326,7 +433,13 @@ export default class MultiSelect extends Component {
             value
         };
 
+        this.handleClearSelection = this.handleClearSelection.bind(this);
         this.handleDocumentClick = this.handleDocumentClick.bind(this);
+        this.handleSaveValue = this.handleSaveValue.bind(this);
+        this.handleSearchSelected = this.handleSearchSelected.bind(this);
+        this.handleSearchUnselected = this.handleSearchUnselected.bind(this);
+        this.handleSelectAll = this.handleSelectAll.bind(this);
+        this.handleToggleExpanded = this.handleToggleExpanded.bind(this);
     }
 
     componentDidMount() {
@@ -468,7 +581,7 @@ export default class MultiSelect extends Component {
         });
     }
 
-    toggleExpanded() {
+    handleToggleExpanded() {
         const {hasFetched, isExpanded, list, value} = this.state;
         const listSource = this.props.listSource;
 
@@ -531,21 +644,37 @@ export default class MultiSelect extends Component {
             }).join(', ');
         };
 
-        const expandDirection = this.props.expandDirection || 'right';
+        const {
+            allowSelectAll,
+            error,
+            expandDirection = 'right',
+            placeholder = 'PLEASE_SELECT'
+        } = this.props;
+
         const isDefaultExpandDirection = expandDirection === 'right';
         const hasValue = value && value[0];
 
         return (
-            <div className={`multi-select-component ${isExpanded ? 'is-expanded' : ''}`}>
+            <div className={`multi-select-component ${isExpanded ? 'is-expanded' : ''} ${error ? 'has-error' : ''}`}>
                 <div
                     className="multi-select-value"
-                    onClick={this.toggleExpanded.bind(this)}>
-
+                    onClick={this.handleToggleExpanded}
+                >
                     <span className={!hasValue ? 'no-value' : null}>
-                        {hasValue ? getListValue() : formatMessage(this.props.placeholder || 'PLEASE_SELECT')}
+                        {hasValue ? getListValue() : formatMessage(placeholder)}
                     </span>
                     <i className={`fa fa-caret-${isExpanded ? 'up' : 'down'} multi-select-value-icon`} />
                 </div>
+                {error &&
+                    <div className="form-column-item-error-icon">
+                        <i className="fa fa-times-circle" />
+                    </div>
+                }
+                {error &&
+                    <div className="form-column-item-error-message">
+                        {error}
+                    </div>
+                }
                 {isExpanded &&
                     <div className={`multi-select-list ${expandDirection}`}>
                         <div className="multi-select-list-options">
@@ -555,9 +684,10 @@ export default class MultiSelect extends Component {
                                 </div>
                                 <div className="multi-select-list-search left">
                                     <Search
-                                        action={this.handleSearchUnselected.bind(this)}
                                         allowKeyUp
-                                        placeholder="SEARCH_UNSELECTED_ITEMS_BY" />
+                                        onAction={this.handleSearchUnselected}
+                                        placeholder="SEARCH_UNSELECTED_ITEMS_BY"
+                                    />
                                 </div>
                                 {getUnselectedListOutput.call(this)}
                             </div>
@@ -567,9 +697,10 @@ export default class MultiSelect extends Component {
                                 </div>
                                 <div className="multi-select-list-search right">
                                     <Search
-                                        action={this.handleSearchSelected.bind(this)}
                                         allowKeyUp
-                                        placeholder="SEARCH_SELECTED_ITEMS_BY" />
+                                        onAction={this.handleSearchSelected}
+                                        placeholder="SEARCH_SELECTED_ITEMS_BY"
+                                    />
                                 </div>
                                 {getSelectedListOutput.call(this)}
                             </div>
@@ -577,22 +708,22 @@ export default class MultiSelect extends Component {
                         <div className="multi-select-list-footer">
                             <span
                                 className="button primary small"
-                                onClick={this.handleSaveValue.bind(this)}>
-
+                                onClick={this.handleSaveValue}
+                            >
                                 {formatMessage('DONE')}
                             </span>
-                            {this.props.allowSelectAll && (
+                            {allowSelectAll &&
                                 <span
                                     className="button small"
-                                    onClick={this.handleSelectAll.bind(this)}>
-
+                                    onClick={this.handleSelectAll}
+                                >
                                     {formatMessage('SELECT_ALL')}
                                 </span>
-                            )}
+                            }
                             <span
                                 className="button small"
-                                onClick={this.handleClearSelection.bind(this)}>
-
+                                onClick={this.handleClearSelection}
+                            >
                                 {formatMessage('CLEAR_SELECTION')}
                             </span>
                         </div>
@@ -602,15 +733,3 @@ export default class MultiSelect extends Component {
         );
     }
 }
-
-MultiSelect.propTypes = {
-    action: PropTypes.func.isRequired,
-    allowSelectAll: PropTypes.bool,
-    attribute: PropTypes.string.isRequired,
-    expandDirection: PropTypes.string,
-    groupBy: PropTypes.string,
-    list: PropTypes.array.isRequired,
-    listSource: PropTypes.func,
-    placeholder: PropTypes.string,
-    value: PropTypes.array
-};

@@ -15,12 +15,18 @@ import TableNestedTable from '../components/widgets/TableNestedTable';
 
 import Dashboard from '../components/dashboard/Dashboard';
 
-function requireAuth(nextState, replaceState) {
+function requireAuth(nextState, replace) {
     if (!sessionStore.getState().get('isAuthenticated')) {
-        replaceState(nextState.location.pathname, '/login', {});
+        replace({
+            pathname: '/login',
+            state: {
+                nextPathname: nextState.location.pathname
+            }
+        });
     }
 }
 
+/* eslint-disable react/jsx-max-props-per-line */
 export default (
     <Route component={App}>
         <Route component={Dashboard} onEnter={requireAuth} path="/" />
@@ -34,3 +40,4 @@ export default (
         <Route component={Login} path="login" />
     </Route>
 );
+/* eslint-disable */

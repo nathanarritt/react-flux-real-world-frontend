@@ -1,3 +1,5 @@
+import ContextSelector from '../components/library/ContextSelector';
+
 export default [
     {
         label: 'RFRWF_DASHBOARD',
@@ -19,7 +21,8 @@ export default [
     },
     {
         className: 'inline thing-selector',
-        component: 'ContextSelector'
+        component: ContextSelector,
+        componentId: 'thingSelector'
     },
     {
         label: 'RFRWF_SEARCH',

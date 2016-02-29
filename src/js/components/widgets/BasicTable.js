@@ -58,12 +58,13 @@ export default class BasicTable extends Component {
                 <Table
                     config={tableConfig}
                     data={basicTables}
-                    isLoading={isLoading} />
+                    isLoading={isLoading}
+                />
                 {hasError &&
                     <Modal
-                        handleAlert={this.handleResetActionError}
-                        title={errorResponse.code}>
-
+                        onAlert={this.handleResetActionError}
+                        title={errorResponse.code}
+                    >
                         <p>{errorResponse.message}</p>
                     </Modal>
                 }

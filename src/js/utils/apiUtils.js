@@ -5,17 +5,16 @@ import sessionActions from '../actions/sessionActions';
 function redirectToLogin() {
     const protocol = window.location.protocol;
     const host = window.location.host;
-    console.log('window.location.href=', protocol + '//' + host + '/#/login');
     window.location.assign(protocol + '//' + host + '/#/login');
 }
 
+/* eslint-disable no-console */
 export function processErrorResponse(api, response) {
     if (response instanceof Error) {
-
-        // Something happened in setting up the request that triggered an Error
-        console.log(api, ' Error', response.message);
+        console.log('Something triggered an Error...');
+        console.log(api, response.stack);
     } else {
-        console.log(api, ' Error Response ', response);
+        console.log(api, response.stack);
 
         // The request was made, but the server responded with a status code
         // that falls out of the range of 2xx
@@ -38,6 +37,8 @@ export function processErrorResponse(api, response) {
         }
     }
 }
+
+/* eslint-enable */
 
 export function sendRequest(type, resource, data = {}) {
     const url = `api/${resource}`;

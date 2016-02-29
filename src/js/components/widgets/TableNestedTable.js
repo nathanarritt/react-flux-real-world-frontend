@@ -156,29 +156,37 @@ export default class TableNestedTable extends Component {
         return (
             <div className="page-content with-scroll">
                 <Toolbar config={toolbarConfig} />
-                <NestedTable childConfig={tableChildConfig}
-                             childData={selectedCluster.instances}
-                             childDataSource={this.handleChildRow}
-                             config={tableConfig}
-                             data={tableNestedTables}
-                             isLoading={isLoading}
-                             withToolbar />
+                <NestedTable
+                    childConfig={tableChildConfig}
+                    childData={selectedCluster.instances}
+                    config={tableConfig}
+                    data={tableNestedTables}
+                    isLoading={isLoading}
+                    onChildDataSource={this.handleChildRow}
+                    withToolbar
+                />
                 {isFormAction &&
-                    <TableNestedTableModal data={actionData}
-                                  handleClose={this.handleActionClose}
-                                  handleSave={this.handleActionSave}
-                                  isLoading={isLoading}
-                                  title={actionTitle} />
+                    <TableNestedTableModal
+                        data={actionData}
+                        isLoading={isLoading}
+                        onClose={this.handleActionClose}
+                        onSave={this.handleActionSave}
+                        title={actionTitle}
+                    />
                 }
                 {isConfirmAction &&
-                    <ConfirmDeleteModal data={actionData}
-                                        handleClose={this.handleActionClose}
-                                        handleConfirm={this.handleDelete}
-                                        isLoading={isLoading} />
+                    <ConfirmDeleteModal
+                        data={actionData}
+                        isLoading={isLoading}
+                        onClose={this.handleActionClose}
+                        onConfirm={this.handleDelete}
+                    />
                 }
                 {hasError &&
-                    <Modal handleAlert={this.handleResetActionError}
-                           title={errorResponse.code}>
+                    <Modal
+                        onAlert={this.handleResetActionError}
+                        title={errorResponse.code}
+                    >
                         <p>{errorResponse.message}</p>
                     </Modal>
                 }

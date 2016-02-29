@@ -126,27 +126,30 @@ export default class TableToolbarModal extends Component {
                     config={tableConfig}
                     data={tableToolbarModals}
                     isLoading={isLoading}
-                    withToolbar />
+                    withToolbar
+                />
                 {isFormAction &&
                     <TableToolbarModalModal
                         data={actionData}
-                        handleClose={this.handleActionClose}
-                        handleSave={this.handleActionSave}
                         isLoading={isLoading}
-                        title={actionTitle} />
+                        onClose={this.handleActionClose}
+                        onSave={this.handleActionSave}
+                        title={actionTitle}
+                    />
                 }
                 {isConfirmAction &&
                     <ConfirmDeleteModal
                         data={actionData}
-                        handleClose={this.handleActionClose}
-                        handleConfirm={this.handleDelete}
-                        isLoading={isLoading} />
+                        isLoading={isLoading}
+                        onClose={this.handleActionClose}
+                        onConfirm={this.handleDelete}
+                    />
                 }
                 {hasError &&
                     <Modal
-                        handleAlert={this.handleResetActionError}
-                        title={errorResponse.code}>
-
+                        onAlert={this.handleResetActionError}
+                        title={errorResponse.code}
+                    >
                         <p>{errorResponse.message}</p>
                     </Modal>
                 }

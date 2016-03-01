@@ -278,10 +278,6 @@ function parseValidations(validations) {
     return temp;
 }
 
-function getErrorStatus(errorAttributes) {
-    return errorAttributes.size > 0;
-}
-
 function clearAllErrors() {
     this.errorAttributes.clear();
     this.hasError = false;
@@ -289,7 +285,7 @@ function clearAllErrors() {
 
 function clearError(attribute) {
     this.errorAttributes.delete(attribute);
-    this.hasError = getErrorStatus(this.errorAttributes);
+    this.hasError = this.errorAttributes.size > 0;
 }
 
 function validateValue(model, attribute) {
@@ -312,11 +308,7 @@ function validateValue(model, attribute) {
         validate.errorAttributes.add(attribute);
         validate.hasError = true;
     } else {
-        validate.errorAttributes.delete(attribute);
-
-        if (validate.hasError) {
-            validate.hasError = getErrorStatus(validate.errorAttributes);
-        }
+        validate.clearError(attribute);
     }
 
     return message;
